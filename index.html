@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <style>
-  :root{
+  :root, [data-theme="dark"]{
     --bg:#111111;
     --bg-2:#161616;
     --panel:#1b1b1b;
@@ -23,6 +23,29 @@
     --accent-2:#f5cf86;
     --accent-soft:rgba(232,177,85,.14);
     --red:#ef5a5a;
+    --shape-fill:rgba(232,177,85,.035);
+    --shape-stroke:rgba(232,177,85,.3);
+    --player-bg:rgba(18,18,18,.92);
+    --card-bg:rgba(30,30,30,.85);
+  }
+  [data-theme="light"]{
+    --bg:#f7f4ee;
+    --bg-2:#efebe3;
+    --panel:#ffffff;
+    --panel-2:#f5f1e9;
+    --line:rgba(30,25,15,.08);
+    --line-strong:rgba(30,25,15,.15);
+    --text:#2a2420;
+    --text-dim:#6d665e;
+    --text-mute:#9a938a;
+    --accent:#b97b1f;        /* doré plus saturé lisible sur clair */
+    --accent-2:#d99a3c;
+    --accent-soft:rgba(185,123,31,.10);
+    --red:#c53030;
+    --shape-fill:rgba(185,123,31,.04);
+    --shape-stroke:rgba(185,123,31,.35);
+    --player-bg:rgba(255,253,248,.92);
+    --card-bg:rgba(255,253,248,.9);
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -39,6 +62,111 @@
   }
   a{color:inherit;text-decoration:none}
   button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+
+  /* transitions douces entre les thèmes */
+  body, aside, main, .player, .card, .station-card, .map-wrap, header{
+    transition: background-color .4s ease, color .3s ease, border-color .3s ease;
+  }
+
+  /* Toggle thème */
+  .theme-toggle{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--panel);border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--text-dim);
+    margin-left:8px;
+    transition:color .2s, border-color .2s, background .2s;
+    position:relative;
+  }
+  .theme-toggle:hover{color:var(--text);border-color:var(--line-strong)}
+  .theme-toggle .icon-sun,
+  .theme-toggle .icon-moon{
+    position:absolute;
+    transition:transform .35s ease, opacity .25s ease;
+  }
+  [data-theme="dark"] .theme-toggle .icon-sun{opacity:1;transform:rotate(0)}
+  [data-theme="dark"] .theme-toggle .icon-moon{opacity:0;transform:rotate(-90deg)}
+  [data-theme="light"] .theme-toggle .icon-sun{opacity:0;transform:rotate(90deg)}
+  [data-theme="light"] .theme-toggle .icon-moon{opacity:1;transform:rotate(0)}
+
+  /* Search avec résultats (dropdown) */
+  .search{position:relative}
+  .search-results{
+    position:absolute;
+    top:calc(100% + 8px);
+    left:0;right:0;
+    background:var(--panel);
+    border:1px solid var(--line-strong);
+    border-radius:14px;
+    padding:8px;
+    max-height:320px;
+    overflow-y:auto;
+    z-index:100;
+    box-shadow: 0 12px 40px rgba(0,0,0,.25);
+  }
+  .search-results[hidden]{display:none}
+  .search-result{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:background .15s;
+    text-align:left;
+    width:100%;
+    border:0;
+    background:none;
+    color:var(--text);
+    font:inherit;
+  }
+  .search-result:hover,
+  .search-result.focused{background:var(--panel-2)}
+  .search-result-main{flex:1;min-width:0}
+  .search-result-city{
+    font-size:13px;font-weight:500;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .search-result-net{
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-weight:600;
+    padding:3px 7px;
+    border-radius:4px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    flex:none;
+  }
+  .search-result-net.net-rfm{
+    background:rgba(255,107,107,.14);
+    color:#ff6b6b;
+  }
+  [data-theme="light"] .search-result-net.net-rfm{
+    background:rgba(197,48,48,.1);
+    color:#c53030;
+  }
+  .search-empty{
+    padding:16px;text-align:center;color:var(--text-mute);
+    font-size:13px;
+  }
+
+  /* Dédicace */
+  .dedication{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:22px;
+    letter-spacing:.02em;
+    color:var(--accent);
+    font-weight:500;
+    max-width:none;
+    margin:0;
+    opacity:0;
+    animation: fadein 1.2s ease .3s forwards;
+  }
+  @keyframes fadein{
+    from{opacity:0;transform:translateY(4px)}
+    to{opacity:1;transform:translateY(0)}
+  }
 
   /* ---------- HEADER ---------- */
   header{
@@ -95,12 +223,6 @@
     width:100%;
   }
   .search input::placeholder{color:var(--text-mute)}
-  .avatar{
-    width:36px;height:36px;border-radius:50%;
-    background:var(--panel);border:1px solid var(--line);
-    display:grid;place-items:center;color:var(--text-dim);
-    margin-left:8px;
-  }
 
   /* ---------- LAYOUT ---------- */
   .app{display:grid;grid-template-columns:280px 1fr}
@@ -228,7 +350,7 @@
   /* ---------- MAP ---------- */
   .map-wrap{
     position:relative;
-    background:linear-gradient(180deg,#1a1a1a,#151515);
+    background:linear-gradient(180deg,var(--bg-2),var(--bg));
     border:1px solid var(--line);
     border-radius:24px;
     overflow:hidden;
@@ -245,12 +367,12 @@
   }
   .map-svg{width:100%;height:100%;display:block}
   .france-fill{
-    fill:rgba(232,177,85,.035);
+    fill:var(--shape-fill);
     stroke:none;
   }
   .france-outline{
     fill:none;
-    stroke:rgba(232,177,85,.3);
+    stroke:var(--shape-stroke);
     stroke-width:1.2;
     stroke-linejoin:round;
     stroke-linecap:round;
@@ -305,7 +427,7 @@
   .station-card{
     position:absolute;
     top:32px;right:32px;
-    background:rgba(30,30,30,.85);
+    background:var(--card-bg);
     backdrop-filter:blur(12px);
     border:1px solid var(--line-strong);
     border-radius:14px;
@@ -346,7 +468,7 @@
   }
   .map-controls button{
     width:40px;height:40px;border-radius:50%;
-    background:rgba(40,40,40,.8);
+    background:var(--panel);
     border:1px solid var(--line);
     color:var(--text-dim);
     display:grid;place-items:center;
@@ -414,7 +536,7 @@
   .player{
     position:fixed;left:0;right:0;bottom:0;
     height:88px;
-    background:rgba(18,18,18,.92);
+    background:var(--player-bg);
     backdrop-filter:blur(20px);
     border-top:1px solid var(--line-strong);
     display:grid;
@@ -427,7 +549,7 @@
   .np-cover{
     width:56px;height:56px;border-radius:10px;flex:none;
     background:
-      linear-gradient(135deg,#2a2a2a,#1a1a1a);
+      linear-gradient(135deg,var(--panel-2),var(--panel));
     display:grid;place-items:center;
     border:1px solid var(--line-strong);
     position:relative;overflow:hidden;
@@ -484,7 +606,7 @@
   }
   @keyframes spin{to{transform:rotate(360deg)}}
   .progress{display:flex;align-items:center;gap:12px;width:100%;max-width:520px;font-size:11px;color:var(--text-mute)}
-  .bar{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;position:relative}
+  .bar{flex:1;height:3px;background:var(--line-strong);border-radius:2px;overflow:hidden;position:relative}
   .bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:100%;border-radius:2px}
   .live-tag{color:var(--accent);font-weight:500;letter-spacing:.1em;text-transform:uppercase}
 
@@ -492,7 +614,7 @@
   .vol{display:flex;align-items:center;gap:8px}
   .vol-slider{
     -webkit-appearance:none;appearance:none;
-    width:90px;height:3px;background:rgba(255,255,255,.08);
+    width:90px;height:3px;background:var(--line-strong);
     border-radius:2px;outline:0;cursor:pointer;
   }
   .vol-slider::-webkit-slider-thumb{
@@ -542,10 +664,12 @@
   </nav>
   <label class="search">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-    <input id="search" type="text" placeholder="Rechercher une station…" />
+    <input id="search" type="text" placeholder="Rechercher une station…" autocomplete="off" />
+    <div id="searchResults" class="search-results" hidden></div>
   </label>
-  <button class="avatar" aria-label="Compte">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+  <button id="themeToggle" class="theme-toggle" aria-label="Basculer le thème" title="Basculer clair/sombre">
+    <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   </button>
 </header>
 
@@ -564,7 +688,7 @@
     <div class="head-row">
       <div>
         <h1>GeoStreams</h1>
-        <p class="lede">Parcourez le territoire français pour découvrir les stations locales d'Europe 2 en direct. Un son, une région, une émotion.</p>
+        <p class="lede dedication">Pour Fabienne.</p>
       </div>
       <div class="badge"><span class="dot"></span><span id="liveCount">104</span>&nbsp;en direct</div>
     </div>
@@ -1009,13 +1133,102 @@ const vol = document.getElementById('vol');
 audio.volume = 0.8;
 vol.addEventListener('input', e => { audio.volume = e.target.value / 100; });
 
-/* ========== Search ========== */
+/* ========== Search (cross-network) ========== */
 const search = document.getElementById('search');
-search.addEventListener('input', e => {
-  const q = e.target.value.trim().toLowerCase();
-  document.querySelectorAll('.city-secondary button').forEach(b => {
-    b.style.display = !q || b.textContent.toLowerCase().includes(q) ? '' : 'none';
+const searchResults = document.getElementById('searchResults');
+
+function buildSearchIndex(){
+  // Regroupe par ville (normalisée), avec la liste des réseaux qui la diffusent
+  const byCity = new Map();
+  Object.values(NETWORKS).forEach(net => {
+    net.stations.forEach(s => {
+      const key = s.city.toLowerCase();
+      if (!byCity.has(key)) byCity.set(key, { city: s.city, entries: [] });
+      byCity.get(key).entries.push({ network: net.id, station: s });
+    });
   });
+  return [...byCity.values()].sort((a,b) => a.city.localeCompare(b.city,'fr'));
+}
+const SEARCH_INDEX = buildSearchIndex();
+
+function renderSearch(q){
+  q = q.trim().toLowerCase();
+  if (!q){ searchResults.hidden = true; searchResults.innerHTML = ''; return; }
+  const matches = SEARCH_INDEX.filter(item => item.city.toLowerCase().includes(q)).slice(0, 12);
+  if (matches.length === 0){
+    searchResults.innerHTML = '<div class="search-empty">Aucune ville trouvée</div>';
+    searchResults.hidden = false;
+    return;
+  }
+  searchResults.innerHTML = '';
+  matches.forEach(item => {
+    item.entries.forEach(entry => {
+      const btn = document.createElement('button');
+      btn.className = 'search-result';
+      btn.dataset.network = entry.network;
+      btn.dataset.city = entry.station.city;
+      const netLabel = NETWORKS[entry.network].label;
+      btn.innerHTML = `
+        <div class="search-result-main">
+          <div class="search-result-city">${entry.station.city}</div>
+        </div>
+        <span class="search-result-net net-${entry.network}">${netLabel}</span>
+      `;
+      btn.addEventListener('click', () => {
+        if (entry.network !== CURRENT_NETWORK){
+          switchNetwork(entry.network);
+          // attendre le prochain tick pour que les stations soient en place
+          setTimeout(() => selectStation(entry.station.city, true), 50);
+        } else {
+          selectStation(entry.station.city, true);
+        }
+        search.value = '';
+        searchResults.hidden = true;
+      });
+      searchResults.appendChild(btn);
+    });
+  });
+  searchResults.hidden = false;
+}
+
+search.addEventListener('input', e => renderSearch(e.target.value));
+search.addEventListener('focus', () => { if (search.value) renderSearch(search.value); });
+// fermer le dropdown au clic extérieur
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search')) searchResults.hidden = true;
+});
+// Enter sur le premier résultat
+search.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter'){
+    const first = searchResults.querySelector('.search-result');
+    if (first) first.click();
+  } else if (e.key === 'Escape'){
+    searchResults.hidden = true;
+    search.blur();
+  }
+});
+
+/* ========== Theme toggle ========== */
+const themeToggle = document.getElementById('themeToggle');
+const THEME_KEY = 'geostreams-theme';
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  try { localStorage.setItem(THEME_KEY, t); } catch(e){}
+}
+// init depuis localStorage ou préférence système
+(function initTheme(){
+  let saved = null;
+  try { saved = localStorage.getItem(THEME_KEY); } catch(e){}
+  if (saved === 'light' || saved === 'dark'){
+    applyTheme(saved);
+  } else {
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    applyTheme(prefersLight ? 'light' : 'dark');
+  }
+})();
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
 });
 
 /* ========== Stats cards (data-driven) ========== */
