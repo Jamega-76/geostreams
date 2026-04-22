@@ -232,8 +232,9 @@
     border:1px solid var(--line);
     border-radius:24px;
     overflow:hidden;
-    min-height:620px;
-    padding:32px;
+    aspect-ratio: 16 / 11;
+    min-height:780px;
+    padding:20px;
   }
   .map-wrap::before{
     content:"";position:absolute;inset:0;
@@ -243,11 +244,16 @@
     pointer-events:none;
   }
   .map-svg{width:100%;height:100%;display:block}
+  .france-fill{
+    fill:rgba(232,177,85,.035);
+    stroke:none;
+  }
   .france-outline{
     fill:none;
-    stroke:rgba(232,177,85,.25);
-    stroke-width:1;
-    stroke-dasharray:2 4;
+    stroke:rgba(232,177,85,.3);
+    stroke-width:1.2;
+    stroke-linejoin:round;
+    stroke-linecap:round;
   }
   .station-dot{
     fill:var(--accent);
@@ -562,26 +568,8 @@
         </div>
       </div>
 
-      <svg id="map" class="map-svg" viewBox="0 0 900 620" preserveAspectRatio="xMidYMid meet">
-        <!-- Contour France stylisé, dessiné à la main -->
-        <path class="france-outline" d="
-          M 395 60
-          C 430 55, 475 75, 505 95
-          C 540 100, 580 110, 615 135
-          C 640 155, 650 185, 660 215
-          C 690 230, 720 250, 735 290
-          C 745 325, 720 360, 700 385
-          C 715 415, 720 450, 705 485
-          C 680 515, 635 520, 600 525
-          C 565 545, 525 555, 485 555
-          C 440 555, 400 540, 365 520
-          C 325 515, 285 505, 250 485
-          C 215 460, 195 420, 195 385
-          C 180 355, 180 320, 195 290
-          C 195 260, 210 225, 240 200
-          C 260 170, 290 140, 320 115
-          C 345 90, 370 70, 395 60 Z
-        " />
+      <svg id="map" class="map-svg" viewBox="0 0 1000 760" preserveAspectRatio="xMidYMid meet">
+        <g id="france-shape"></g>
         <g id="stations"></g>
       </svg>
 
@@ -1403,21 +1391,63 @@ const STATIONS = [
 ];
 
 /* ========== Geo projection ==========
-   Map bbox: lng [-5, 9.5], lat [41, 51.5]
-   SVG viewBox: 900 x 620, content area ~ 160..740 x 60..560
+   viewBox: 1000 x 760
+   France métropole lng [-5, 9.5], lat [41, 51.1]
+   Projection équi-rectangulaire avec correction longitude par cos(lat_médiane)
+   pour que la France ne soit pas aplatie.
 */
-const PROJ = {
-  lngMin: -5, lngMax: 9.5,
-  latMin: 41, latMax: 51.5,
-  x0: 160, x1: 740,
-  y0: 60,  y1: 560,
-};
+const COASTLINE = {"metropole":[[2.37,51.07],[2.55,51.02],[2.95,50.77],[3.16,50.78],[3.65,50.5],[4.18,50.28],[4.83,50.16],[5.35,49.97],[5.85,49.54],[6.37,49.46],[6.73,49.16],[7.05,49.15],[7.47,49.17],[8.22,48.97],[7.82,48.58],[7.57,47.58],[7.0,47.48],[6.76,47.12],[6.02,46.25],[6.85,46.13],[7.05,45.92],[6.98,45.63],[7.3,45.4],[6.96,44.84],[7.7,44.08],[7.51,43.77],[7.44,43.75],[6.93,43.43],[6.17,43.07],[5.36,43.22],[4.79,43.33],[4.05,43.55],[3.0,43.2],[2.98,42.48],[1.72,42.5],[0.67,42.7],[-0.55,42.8],[-1.5,43.3],[-1.25,44.65],[-1.2,45.5],[-1.15,46.16],[-2.0,46.8],[-2.4,47.27],[-2.95,47.58],[-3.9,47.8],[-4.35,47.95],[-4.77,48.05],[-4.72,48.54],[-4.3,48.66],[-3.7,48.7],[-2.86,48.7],[-1.98,48.69],[-1.56,48.68],[-1.55,49.25],[-1.85,49.72],[-1.23,49.4],[-0.72,49.37],[-0.23,49.3],[0.2,49.45],[0.7,49.82],[1.08,49.95],[1.43,50.18],[1.55,50.5],[1.6,50.78],[2.05,51.0],[2.37,51.07]],"corse":[[9.35,43.0],[9.55,42.85],[9.5,42.5],[9.3,42.15],[9.4,41.85],[9.25,41.55],[9.0,41.4],[8.8,41.48],[8.55,41.78],[8.7,42.05],[8.55,42.35],[8.7,42.65],[9.0,42.8],[9.35,43.0]]};
+
+// bbox géographique à afficher
+const GEO = { lngMin:-5.5, lngMax:9.8, latMin:41.2, latMax:51.3 };
+// zone cible dans le viewBox (avec marges réduites pour max d'espace)
+const BOX = { x0:60, x1:940, y0:40, y1:720 };
+
+// facteur de compression longitude (Mercator plate approximée au centre)
+const COS_LAT = Math.cos((GEO.latMin + GEO.latMax)/2 * Math.PI/180);
+
 function project(lng, lat){
-  const x = PROJ.x0 + (lng - PROJ.lngMin) / (PROJ.lngMax - PROJ.lngMin) * (PROJ.x1 - PROJ.x0);
-  // latitude inverse: +lat -> up (smaller y)
-  const y = PROJ.y1 - (lat - PROJ.latMin) / (PROJ.latMax - PROJ.latMin) * (PROJ.y1 - PROJ.y0);
+  // étendue géographique "corrigée"
+  const lngSpan = (GEO.lngMax - GEO.lngMin) * COS_LAT;
+  const latSpan = (GEO.latMax - GEO.latMin);
+  // ratio viewport disponible
+  const boxW = BOX.x1 - BOX.x0;
+  const boxH = BOX.y1 - BOX.y0;
+  // scale homogène pour ne pas déformer
+  const scale = Math.min(boxW/lngSpan, boxH/latSpan);
+  const drawW = lngSpan * scale;
+  const drawH = latSpan * scale;
+  const offX = BOX.x0 + (boxW - drawW)/2;
+  const offY = BOX.y0 + (boxH - drawH)/2;
+  const x = offX + (lng - GEO.lngMin) * COS_LAT * scale;
+  const y = offY + (GEO.latMax - lat) * scale;
   return {x, y};
 }
+
+// Rendu du contour France
+(function renderFranceShape(){
+  const g = document.getElementById('france-shape');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function pathFrom(points){
+    return 'M ' + points.map(([lng,lat]) => {
+      const {x,y} = project(lng,lat);
+      return x.toFixed(1) + ' ' + y.toFixed(1);
+    }).join(' L ') + ' Z';
+  }
+  // Fill subtil + contour pointillé
+  [COASTLINE.metropole, COASTLINE.corse].forEach(pts => {
+    // fill
+    const fill = document.createElementNS(SVG_NS,'path');
+    fill.setAttribute('d', pathFrom(pts));
+    fill.setAttribute('class','france-fill');
+    g.appendChild(fill);
+    // stroke
+    const stroke = document.createElementNS(SVG_NS,'path');
+    stroke.setAttribute('d', pathFrom(pts));
+    stroke.setAttribute('class','france-outline');
+    g.appendChild(stroke);
+  });
+})();
 
 /* ========== Render sidebar ========== */
 const MAIN_CITIES = ['Paris','Lyon','Marseille','Bordeaux','Lille','Nantes'];
