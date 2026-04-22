@@ -469,9 +469,20 @@
     background:var(--accent);color:#1a1a1a;
     display:grid;place-items:center;
     transition:transform .15s,background .15s;
+    position:relative;
   }
   .play-btn:hover{background:var(--accent-2);transform:scale(1.05)}
   .play-btn svg{color:#1a1a1a}
+  .play-btn.loading svg{opacity:.2}
+  .play-btn.loading::after{
+    content:"";
+    position:absolute;
+    width:22px;height:22px;border-radius:50%;
+    border:2px solid rgba(26,26,26,.25);
+    border-top-color:#1a1a1a;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
   .progress{display:flex;align-items:center;gap:12px;width:100%;max-width:520px;font-size:11px;color:var(--text-mute)}
   .bar{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;position:relative}
   .bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:100%;border-radius:2px}
@@ -655,7 +666,7 @@
   </div>
 </footer>
 
-<audio id="audio" crossorigin="anonymous"></audio>
+<audio id="audio" preload="none"></audio>
 
 <script>
 /* ========== Data ========== */
@@ -1450,19 +1461,13 @@ function project(lng, lat){
 })();
 
 /* ========== Render sidebar ========== */
-const MAIN_CITIES = ['Paris','Lyon','Marseille','Bordeaux','Lille','Nantes'];
+const MAIN_CITIES = ['Lyon','Marseille','Bordeaux','Lille','Nantes','Strasbourg','Toulouse'];
 const cityList = document.getElementById('cityList');
 const citySecondary = document.getElementById('citySecondary');
 
-// Paris n'est pas dans les données Europe 2 locales — on le gère manuellement
-// comme une "station par défaut" pointant sur le flux national (Annemasse sera par ex. pas adapté).
-// On ajoute Paris en tête avec un flux national Europe 2 générique.
-const PARIS_STATION = {
-  city:'Paris', region:'Île-de-France',
-  flux:'https://europe2.lmn.fm/europe2.m3u8', // fallback national
-  lng:2.3522, lat:48.8566
-};
-const allStations = [PARIS_STATION, ...STATIONS];
+// On utilise directement les stations du KML (104 villes).
+// Paris n'ayant pas de flux local Europe 2 dans le KML, on laisse les villes fournies.
+const allStations = [...STATIONS];
 document.getElementById('liveCount').textContent = allStations.length;
 
 function iconBuilding(){
@@ -1536,24 +1541,71 @@ renderMap();
 
 /* ========== Audio / HLS ========== */
 const audio = document.getElementById('audio');
+const playBtn = document.getElementById('playBtn');
+const iconPlay = document.getElementById('iconPlay');
+const iconPause = document.getElementById('iconPause');
+const npBars = document.getElementById('npBars');
+
 let hls = null;
 let currentIndex = 0;
 let isPlaying = false;
+let isLoading = false;
+
+function setLoadingVisual(loading){
+  isLoading = loading;
+  playBtn.classList.toggle('loading', loading);
+}
+
+function setStreamError(msg){
+  console.warn('[GeoStreams]', msg);
+  const sub = document.getElementById('npSub');
+  sub.innerHTML = `<span style="color:var(--red)">⚠ ${msg}</span>`;
+  setLoadingVisual(false);
+  setPlayingVisual(false);
+}
 
 function loadStream(url){
-  if (hls){ hls.destroy(); hls = null; }
-  if (!url){ return false; }
+  // reset
+  if (hls){ try{hls.destroy();}catch(e){} hls = null; }
+  audio.pause();
+  audio.removeAttribute('src');
+  audio.load();
+
+  if (!url){
+    setStreamError('Flux indisponible pour cette ville');
+    return false;
+  }
+
+  // Safari / iOS : HLS natif
   if (audio.canPlayType('application/vnd.apple.mpegurl')){
     audio.src = url;
     return true;
   }
+  // Autres navigateurs : hls.js
   if (window.Hls && window.Hls.isSupported()){
-    hls = new Hls();
+    hls = new Hls({ enableWorker:true, lowLatencyMode:false });
+    hls.on(Hls.Events.ERROR, (event, data) => {
+      console.warn('[HLS error]', data);
+      if (data.fatal){
+        switch (data.type){
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            setStreamError('Erreur réseau (le flux bloque peut-être CORS)');
+            hls.destroy(); hls = null;
+            break;
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            try{ hls.recoverMediaError(); }catch(e){}
+            break;
+          default:
+            setStreamError('Erreur de lecture du flux');
+            hls.destroy(); hls = null;
+        }
+      }
+    });
     hls.loadSource(url);
     hls.attachMedia(audio);
     return true;
   }
-  // fallback
+  // Fallback ultime
   audio.src = url;
   return true;
 }
@@ -1562,13 +1614,13 @@ function updateUI(s){
   document.getElementById('cardName').textContent = 'Europe 2 ' + s.city;
   document.getElementById('cardFreq').textContent = s.region;
   document.getElementById('npTitle').textContent = 'Europe 2 ' + s.city;
-  document.getElementById('npRegion').textContent = s.region;
+  // reset np-sub (effacer d'éventuelles erreurs précédentes)
+  document.getElementById('npSub').innerHTML =
+    '<span class="live">En direct</span> &nbsp;·&nbsp; <span id="npRegion">' + s.region + '</span>';
 
-  // sidebar
   document.querySelectorAll('.city, .city-secondary button').forEach(el => {
     el.classList.toggle('active', el.dataset.city === s.city);
   });
-  // map highlight
   document.querySelectorAll('.station-group').forEach(g => {
     const isSel = g.dataset.city === s.city;
     g.classList.toggle('playing', isSel);
@@ -1579,24 +1631,25 @@ function updateUI(s){
   });
 }
 
-function selectStation(city){
+function selectStation(city, autoplay){
   const idx = allStations.findIndex(s => s.city === city);
   if (idx < 0) return;
   currentIndex = idx;
   const s = allStations[idx];
-  const ok = loadStream(s.flux);
   updateUI(s);
-  if (ok && isPlaying){
-    audio.play().catch(()=>{});
+
+  const wasPlaying = isPlaying || autoplay;
+  const ok = loadStream(s.flux);
+  if (ok && wasPlaying){
+    setLoadingVisual(true);
+    const p = audio.play();
+    if (p && p.catch) p.catch(err => {
+      setStreamError('Lecture bloquée (' + (err.name || 'erreur') + ')');
+    });
   }
 }
 
 /* ========== Player controls ========== */
-const playBtn = document.getElementById('playBtn');
-const iconPlay = document.getElementById('iconPlay');
-const iconPause = document.getElementById('iconPause');
-const npBars = document.getElementById('npBars');
-
 function setPlayingVisual(p){
   isPlaying = p;
   iconPlay.style.display = p ? 'none' : 'block';
@@ -1612,28 +1665,45 @@ function setPlayingVisual(p){
 
 playBtn.addEventListener('click', () => {
   const s = allStations[currentIndex];
-  if (!audio.src && !hls){ loadStream(s.flux); }
-  if (audio.paused){
-    audio.play().then(() => setPlayingVisual(true)).catch(err => {
-      console.warn('Lecture impossible :', err);
-      setPlayingVisual(false);
-    });
-  } else {
+  // Si on est déjà en train de jouer -> pause
+  if (!audio.paused){
     audio.pause();
     setPlayingVisual(false);
+    return;
+  }
+  // Sinon on (re)lance : s'assurer qu'un flux est chargé
+  const hasStream = audio.src || hls;
+  if (!hasStream){
+    const ok = loadStream(s.flux);
+    if (!ok) return;
+  }
+  setLoadingVisual(true);
+  const p = audio.play();
+  if (p && p.catch){
+    p.then(() => setPlayingVisual(true))
+     .catch(err => {
+       setStreamError('Lecture impossible (' + (err.name || 'erreur') + ')');
+     });
   }
 });
-audio.addEventListener('play',  () => setPlayingVisual(true));
-audio.addEventListener('pause', () => setPlayingVisual(false));
-audio.addEventListener('ended', () => setPlayingVisual(false));
+
+// Événements audio -> synchro UI
+audio.addEventListener('playing', () => { setLoadingVisual(false); setPlayingVisual(true); });
+audio.addEventListener('pause',   () => setPlayingVisual(false));
+audio.addEventListener('ended',   () => setPlayingVisual(false));
+audio.addEventListener('waiting', () => setLoadingVisual(true));
+audio.addEventListener('error',   () => {
+  setStreamError('Le flux audio n\'a pas pu être chargé');
+});
+audio.addEventListener('stalled', () => setLoadingVisual(true));
 
 document.getElementById('prevBtn').addEventListener('click', () => {
   const i = (currentIndex - 1 + allStations.length) % allStations.length;
-  selectStation(allStations[i].city);
+  selectStation(allStations[i].city, true);
 });
 document.getElementById('nextBtn').addEventListener('click', () => {
   const i = (currentIndex + 1) % allStations.length;
-  selectStation(allStations[i].city);
+  selectStation(allStations[i].city, true);
 });
 
 /* ========== Volume ========== */
