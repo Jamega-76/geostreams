@@ -871,12 +871,8 @@ function loadStream(url){
     return false;
   }
 
-  // Safari / iOS : HLS natif
-  if (audio.canPlayType('application/vnd.apple.mpegurl')){
-    audio.src = url;
-    return true;
-  }
-  // Autres navigateurs : hls.js
+  // PRIORITÉ hls.js : Chrome retourne 'maybe' à canPlayType() même sans support réel.
+  // On ne tombe sur le HLS natif que si hls.js n'est PAS supporté (ex: iOS Safari).
   if (window.Hls && window.Hls.isSupported()){
     hls = new Hls({ enableWorker:true, lowLatencyMode:false });
     hls.on(Hls.Events.ERROR, (event, data) => {
@@ -884,7 +880,7 @@ function loadStream(url){
       if (data.fatal){
         switch (data.type){
           case Hls.ErrorTypes.NETWORK_ERROR:
-            setStreamError('Erreur réseau (le flux bloque peut-être CORS)');
+            setStreamError('Erreur réseau (CORS ou flux hors ligne)');
             hls.destroy(); hls = null;
             break;
           case Hls.ErrorTypes.MEDIA_ERROR:
@@ -900,15 +896,22 @@ function loadStream(url){
     hls.attachMedia(audio);
     return true;
   }
-  // Fallback ultime
+  // Fallback HLS natif (Safari iOS/macOS où hls.js n'est pas supporté)
+  if (audio.canPlayType('application/vnd.apple.mpegurl')){
+    audio.src = url;
+    return true;
+  }
+  // Dernier recours
   audio.src = url;
   return true;
 }
 
 function updateUI(s){
-  document.getElementById('cardName').textContent = 'Europe 2 ' + s.city;
+  const net = NETWORKS[CURRENT_NETWORK];
+  const brand = net ? net.label : 'Europe 2';
+  document.getElementById('cardName').textContent = brand + ' ' + s.city;
   document.getElementById('cardFreq').textContent = s.region;
-  document.getElementById('npTitle').textContent = 'Europe 2 ' + s.city;
+  document.getElementById('npTitle').textContent = brand + ' ' + s.city;
   // reset np-sub (effacer d'éventuelles erreurs précédentes)
   document.getElementById('npSub').innerHTML =
     '<span class="live">En direct</span> &nbsp;·&nbsp; <span id="npRegion">' + s.region + '</span>';
