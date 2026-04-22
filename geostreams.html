@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GeoStreams — L'excellence sonore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<style>
+  :root{
+    --bg:#111111;
+    --bg-2:#161616;
+    --panel:#1b1b1b;
+    --panel-2:#202020;
+    --line:rgba(255,255,255,.07);
+    --line-strong:rgba(255,255,255,.12);
+    --text:#e9e6df;
+    --text-dim:#9a948a;
+    --text-mute:#6a665e;
+    --accent:#e8b155;        /* doré chaud */
+    --accent-2:#f5cf86;
+    --accent-soft:rgba(232,177,85,.14);
+    --red:#ef5a5a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    font-weight:400;
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding-bottom:88px; /* player sticky */
+  }
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+
+  /* ---------- HEADER ---------- */
+  header{
+    height:72px;
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;
+    padding:0 40px;
+    gap:56px;
+    position:sticky;top:0;background:var(--bg);z-index:40;
+    backdrop-filter:blur(8px);
+  }
+  .logo{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:-.01em;
+    color:var(--accent);
+  }
+  .logo span{color:var(--text)}
+  nav{display:flex;gap:36px}
+  nav a{
+    font-size:13px;
+    font-weight:500;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    padding:6px 0;
+    position:relative;
+    transition:color .2s;
+  }
+  nav a:hover{color:var(--text)}
+  nav a.active{color:var(--text)}
+  nav a.active::after{
+    content:"";
+    position:absolute;left:0;right:0;bottom:-2px;
+    height:2px;background:var(--accent);
+    border-radius:2px;
+  }
+  .search{
+    margin-left:auto;
+    display:flex;align-items:center;gap:10px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:8px 16px;
+    width:280px;
+    transition:border-color .2s;
+  }
+  .search:focus-within{border-color:var(--line-strong)}
+  .search svg{flex:none;color:var(--text-mute)}
+  .search input{
+    background:none;border:0;outline:0;
+    color:var(--text);font-size:13px;
+    width:100%;
+  }
+  .search input::placeholder{color:var(--text-mute)}
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--panel);border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--text-dim);
+    margin-left:8px;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .app{display:grid;grid-template-columns:280px 1fr}
+
+  /* ---------- SIDEBAR ---------- */
+  aside{
+    border-right:1px solid var(--line);
+    padding:40px 24px 24px;
+    min-height:calc(100vh - 72px - 88px);
+  }
+  .aside-title{
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .aside-sub{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+    margin-bottom:24px;
+  }
+  .city-list{display:flex;flex-direction:column;gap:2px;margin-bottom:32px}
+  .city{
+    display:flex;align-items:center;gap:14px;
+    padding:12px 14px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:500;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:all .18s ease;
+    border:1px solid transparent;
+  }
+  .city svg{flex:none;color:var(--text-mute);transition:color .18s}
+  .city:hover{color:var(--text);background:var(--panel)}
+  .city.active{
+    background:linear-gradient(90deg, var(--accent-soft), transparent 70%);
+    color:var(--accent);
+    border-color:rgba(232,177,85,.2);
+  }
+  .city.active svg{color:var(--accent)}
+  .aside-section{
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+    font-weight:500;
+    padding:0 14px 10px;
+    border-top:1px solid var(--line);
+    padding-top:24px;
+  }
+  .city-secondary{
+    display:flex;flex-direction:column;
+  }
+  .city-secondary button{
+    text-align:left;
+    padding:10px 14px;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+    border-radius:8px;
+    transition:color .18s, background .18s;
+  }
+  .city-secondary button:hover{color:var(--text);background:var(--panel)}
+  .city-secondary button.active{color:var(--accent)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:48px 56px 80px}
+  .head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:40px;margin-bottom:40px}
+  h1{
+    font-family:'Fraunces',serif;
+    font-size:88px;
+    line-height:.95;
+    font-weight:700;
+    letter-spacing:-.03em;
+    margin:0 0 20px;
+    color:var(--text);
+  }
+  .lede{
+    font-size:16px;
+    line-height:1.55;
+    color:var(--text-dim);
+    max-width:480px;
+    font-weight:300;
+  }
+  .badge{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:10px 18px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:999px;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text);
+    font-weight:500;
+    white-space:nowrap;
+  }
+  .badge .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 0 0 rgba(239,90,90,.6);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(239,90,90,.6)}
+    70%{box-shadow:0 0 0 10px rgba(239,90,90,0)}
+    100%{box-shadow:0 0 0 0 rgba(239,90,90,0)}
+  }
+
+  /* ---------- MAP ---------- */
+  .map-wrap{
+    position:relative;
+    background:linear-gradient(180deg,#1a1a1a,#151515);
+    border:1px solid var(--line);
+    border-radius:24px;
+    overflow:hidden;
+    min-height:620px;
+    padding:32px;
+  }
+  .map-wrap::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(600px 400px at 30% 40%, rgba(232,177,85,.06), transparent 60%),
+      radial-gradient(500px 500px at 80% 70%, rgba(232,177,85,.04), transparent 70%);
+    pointer-events:none;
+  }
+  .map-svg{width:100%;height:100%;display:block}
+  .france-outline{
+    fill:none;
+    stroke:rgba(232,177,85,.25);
+    stroke-width:1;
+    stroke-dasharray:2 4;
+  }
+  .station-dot{
+    fill:var(--accent);
+    cursor:pointer;
+    transition:all .2s;
+    filter:drop-shadow(0 0 6px rgba(232,177,85,.4));
+  }
+  .station-dot.small{
+    fill:rgba(232,177,85,.35);
+    filter:none;
+  }
+  .station-dot:hover{
+    fill:var(--accent-2);
+    filter:drop-shadow(0 0 12px rgba(232,177,85,.8));
+  }
+  .station-dot.playing{
+    fill:var(--accent-2);
+    filter:drop-shadow(0 0 14px rgba(245,207,134,.9));
+  }
+  .pulse-ring{
+    fill:none;
+    stroke:var(--accent);
+    stroke-width:1.5;
+    opacity:0;
+    transform-origin:center;
+    transform-box:fill-box;
+    animation:ring 2s infinite;
+  }
+  @keyframes ring{
+    0%{transform:scale(.6);opacity:.9}
+    100%{transform:scale(2.5);opacity:0}
+  }
+  .station-label{
+    fill:var(--text-dim);
+    font-size:10px;
+    font-family:'Inter';
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .2s;
+  }
+  .station-group:hover .station-label,
+  .station-group.playing .station-label{
+    opacity:1;
+    fill:var(--accent-2);
+  }
+
+  .station-card{
+    position:absolute;
+    top:32px;right:32px;
+    background:rgba(30,30,30,.85);
+    backdrop-filter:blur(12px);
+    border:1px solid var(--line-strong);
+    border-radius:14px;
+    padding:16px 18px;
+    min-width:220px;
+    z-index:2;
+  }
+  .station-card-label{
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--text-mute);font-weight:500;margin-bottom:4px;
+  }
+  .station-card-name{
+    font-family:'Fraunces',serif;
+    font-size:17px;font-weight:600;color:var(--accent);
+    margin-bottom:2px;
+  }
+  .station-card-meta{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:8px;padding-top:8px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--text-dim);
+  }
+  .bars{display:flex;gap:2px;align-items:flex-end;height:14px}
+  .bars span{
+    width:3px;background:var(--accent);border-radius:1px;
+    animation:bar 1.2s ease-in-out infinite;
+  }
+  .bars span:nth-child(1){height:40%;animation-delay:-.4s}
+  .bars span:nth-child(2){height:80%;animation-delay:-.2s}
+  .bars span:nth-child(3){height:60%}
+  @keyframes bar{
+    0%,100%{transform:scaleY(.4)}
+    50%{transform:scaleY(1)}
+  }
+
+  .map-controls{
+    position:absolute;left:32px;bottom:32px;
+    display:flex;flex-direction:column;gap:8px;z-index:2;
+  }
+  .map-controls button{
+    width:40px;height:40px;border-radius:50%;
+    background:rgba(40,40,40,.8);
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    display:grid;place-items:center;
+    backdrop-filter:blur(8px);
+    transition:all .2s;
+  }
+  .map-controls button:hover{color:var(--text);border-color:var(--line-strong)}
+
+  /* ---------- CARDS ---------- */
+  .cards{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+    margin-top:40px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:26px 28px;
+    cursor:pointer;
+    transition:all .25s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(135deg,rgba(232,177,85,.06),transparent 60%);
+    opacity:0;transition:opacity .25s;
+  }
+  .card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(232,177,85,.25);
+  }
+  .card:hover::before{opacity:1}
+  .card > *{position:relative}
+  .card-label{
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:14px;
+  }
+  .card-title{
+    font-family:'Fraunces',serif;
+    font-size:26px;font-weight:600;
+    margin:0 0 10px;color:var(--text);
+    letter-spacing:-.01em;
+  }
+  .card-desc{
+    color:var(--text-dim);
+    font-size:13px;line-height:1.55;
+    font-weight:300;
+  }
+
+  /* ---------- PLAYER ---------- */
+  .player{
+    position:fixed;left:0;right:0;bottom:0;
+    height:88px;
+    background:rgba(18,18,18,.92);
+    backdrop-filter:blur(20px);
+    border-top:1px solid var(--line-strong);
+    display:grid;
+    grid-template-columns:280px 1fr 280px;
+    align-items:center;
+    padding:0 32px 0 24px;
+    z-index:50;
+  }
+  .np{display:flex;align-items:center;gap:14px;min-width:0}
+  .np-cover{
+    width:56px;height:56px;border-radius:10px;flex:none;
+    background:
+      linear-gradient(135deg,#2a2a2a,#1a1a1a);
+    display:grid;place-items:center;
+    border:1px solid var(--line-strong);
+    position:relative;overflow:hidden;
+  }
+  .np-cover::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 30%,rgba(232,177,85,.25),transparent 60%);
+  }
+  .np-cover svg{color:var(--accent);position:relative;z-index:1}
+  .np-text{min-width:0;display:flex;flex-direction:column}
+  .np-title-row{display:flex;align-items:center;gap:8px}
+  .np-title{
+    font-weight:600;font-size:14px;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .np-sub{
+    font-size:11px;color:var(--text-dim);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    margin-top:2px;
+  }
+  .np-sub .live{color:var(--accent);font-weight:500}
+  .np-sub .live::before{
+    content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:var(--red);margin-right:6px;vertical-align:middle;
+    animation:pulse 2s infinite;
+  }
+  .bars-sm{display:inline-flex;gap:2px;height:10px;align-items:flex-end;margin-left:4px}
+  .bars-sm span{width:2px;background:var(--accent);border-radius:1px;animation:bar 1.2s infinite}
+  .bars-sm span:nth-child(1){height:30%;animation-delay:-.4s}
+  .bars-sm span:nth-child(2){height:70%;animation-delay:-.2s}
+  .bars-sm span:nth-child(3){height:50%}
+
+  .controls{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .ctrl-row{display:flex;align-items:center;gap:22px;color:var(--text-dim)}
+  .ctrl-row button{transition:color .2s;display:grid;place-items:center}
+  .ctrl-row button:hover{color:var(--text)}
+  .play-btn{
+    width:44px;height:44px;border-radius:50%;
+    background:var(--accent);color:#1a1a1a;
+    display:grid;place-items:center;
+    transition:transform .15s,background .15s;
+  }
+  .play-btn:hover{background:var(--accent-2);transform:scale(1.05)}
+  .play-btn svg{color:#1a1a1a}
+  .progress{display:flex;align-items:center;gap:12px;width:100%;max-width:520px;font-size:11px;color:var(--text-mute)}
+  .bar{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;position:relative}
+  .bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:100%;border-radius:2px}
+  .live-tag{color:var(--accent);font-weight:500;letter-spacing:.1em;text-transform:uppercase}
+
+  .extra{display:flex;align-items:center;gap:16px;justify-content:flex-end;color:var(--text-dim)}
+  .vol{display:flex;align-items:center;gap:8px}
+  .vol-slider{
+    -webkit-appearance:none;appearance:none;
+    width:90px;height:3px;background:rgba(255,255,255,.08);
+    border-radius:2px;outline:0;cursor:pointer;
+  }
+  .vol-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:12px;height:12px;border-radius:50%;
+    background:var(--text);border:0;
+  }
+  .vol-slider::-moz-range-thumb{
+    width:12px;height:12px;border-radius:50%;
+    background:var(--text);border:0;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding:28px 56px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--text-mute);
+    border-top:1px solid var(--line);
+  }
+  footer .f-links{display:flex;gap:28px}
+  footer a:hover{color:var(--text-dim)}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:960px){
+    .app{grid-template-columns:1fr}
+    aside{display:none}
+    main{padding:32px 24px 60px}
+    h1{font-size:52px}
+    .head-row{flex-direction:column}
+    .cards{grid-template-columns:1fr}
+    .player{grid-template-columns:1fr auto;padding:0 16px;height:80px;gap:12px}
+    .extra{display:none}
+    .search{width:180px}
+    nav{display:none}
+    footer{flex-direction:column;gap:12px;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Geo<span>Streams</span></div>
+  <nav>
+    <a href="#" class="active">Direct</a>
+    <a href="#">Programmes</a>
+    <a href="#">Villes</a>
+    <a href="#">Podcasts</a>
+  </nav>
+  <label class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search" type="text" placeholder="Rechercher une station…" />
+  </label>
+  <button class="avatar" aria-label="Compte">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+  </button>
+</header>
+
+<div class="app">
+  <aside>
+    <div class="aside-title">Villes</div>
+    <div class="aside-sub">Explorer par région</div>
+
+    <div class="city-list" id="cityList"><!-- cities top --></div>
+
+    <div class="aside-section">Toutes les villes</div>
+    <div class="city-secondary" id="citySecondary"></div>
+  </aside>
+
+  <main>
+    <div class="head-row">
+      <div>
+        <h1>GeoStreams</h1>
+        <p class="lede">Parcourez le territoire français pour découvrir les stations locales d'Europe 2 en direct. Un son, une région, une émotion.</p>
+      </div>
+      <div class="badge"><span class="dot"></span><span id="liveCount">20</span>&nbsp;en direct</div>
+    </div>
+
+    <div class="map-wrap">
+      <div class="station-card">
+        <div class="station-card-label">Station active</div>
+        <div class="station-card-name" id="cardName">Europe 2 Paris</div>
+        <div class="station-card-meta">
+          <span id="cardFreq">FM 103.5</span>
+          <div class="bars"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <svg id="map" class="map-svg" viewBox="0 0 900 620" preserveAspectRatio="xMidYMid meet">
+        <!-- Contour France stylisé, dessiné à la main -->
+        <path class="france-outline" d="
+          M 395 60
+          C 430 55, 475 75, 505 95
+          C 540 100, 580 110, 615 135
+          C 640 155, 650 185, 660 215
+          C 690 230, 720 250, 735 290
+          C 745 325, 720 360, 700 385
+          C 715 415, 720 450, 705 485
+          C 680 515, 635 520, 600 525
+          C 565 545, 525 555, 485 555
+          C 440 555, 400 540, 365 520
+          C 325 515, 285 505, 250 485
+          C 215 460, 195 420, 195 385
+          C 180 355, 180 320, 195 290
+          C 195 260, 210 225, 240 200
+          C 260 170, 290 140, 320 115
+          C 345 90, 370 70, 395 60 Z
+        " />
+        <g id="stations"></g>
+      </svg>
+
+      <div class="map-controls">
+        <button aria-label="Zoom avant">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button aria-label="Zoom arrière">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">Sélection du jour</div>
+        <h3 class="card-title">Les Matins d'Europe</h3>
+        <p class="card-desc">Actualité, pop culture et musique en direct de nos studios parisiens, chaque matin dès 6h.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Podcast exclusif</div>
+        <h3 class="card-title">L'Onde Inconnue</h3>
+        <p class="card-desc">Enquête sonore sur les pionniers oubliés de la radio française des années folles.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Votre région</div>
+        <h3 class="card-title" id="cardRegion">Rhône-Alpes Mix</h3>
+        <p class="card-desc">Le meilleur de la scène locale lyonnaise, entre pop, indie et découvertes.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- PLAYER -->
+<div class="player">
+  <div class="np">
+    <div class="np-cover">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 0 1 16 0v5"/><path d="M20 16a2 2 0 0 1-2 2h-1v-5h3v3Z"/><path d="M7 16a2 2 0 0 0-2 2h0v0a2 2 0 0 0 2 2h1v-5H7Z"/></svg>
+    </div>
+    <div class="np-text">
+      <div class="np-title-row">
+        <span class="np-title" id="npTitle">Europe 2 Paris</span>
+        <span class="bars-sm" id="npBars" style="display:none"><span></span><span></span><span></span></span>
+      </div>
+      <div class="np-sub" id="npSub"><span class="live">En direct</span> &nbsp;·&nbsp; <span id="npRegion">Île-de-France</span></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-row">
+      <button aria-label="Aléatoire"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h1.4a6 6 0 0 0 4.8-2.4L10 13"/><path d="m14 11 1.8-2.6A6 6 0 0 1 20.6 6H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.4a6 6 0 0 1 4.8 2.4L14 16.6a6 6 0 0 0 4.8 2.4H22"/><path d="m18 22 4-4-4-4"/></svg></button>
+      <button id="prevBtn" aria-label="Précédent"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h2v16H6zM20 4 10 12l10 8z"/></svg></button>
+      <button id="playBtn" class="play-btn" aria-label="Lecture">
+        <svg id="iconPlay" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>
+        <svg id="iconPause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+      </button>
+      <button id="nextBtn" aria-label="Suivant"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 4h2v16h-2zM4 4v16l10-8z"/></svg></button>
+      <button aria-label="Répéter"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></button>
+    </div>
+    <div class="progress">
+      <span class="live-tag">Live</span>
+      <div class="bar"><div class="fill"></div></div>
+      <span>—:—</span>
+    </div>
+  </div>
+
+  <div class="extra">
+    <button aria-label="Liste"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+    <div class="vol">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+      <input id="vol" class="vol-slider" type="range" min="0" max="100" value="80" />
+    </div>
+    <button aria-label="Plein écran"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+  </div>
+</div>
+
+<footer>
+  <span>© 2026 GeoStreams. L'excellence sonore.</span>
+  <div class="f-links">
+    <a href="#">Mentions légales</a>
+    <a href="#">Contact</a>
+    <a href="#">Archives</a>
+  </div>
+</footer>
+
+<audio id="audio" crossorigin="anonymous"></audio>
+
+<script>
+/* ========== Data ========== */
+const STATIONS = [
+  {
+    "city": "Abbeville",
+    "region": "Nord Picardie",
+    "flux": "https://europe2.lmn.fm/europe2-80000/playlist.m3u8",
+    "lng": 1.8697,
+    "lat": 50.095
+  },
+  {
+    "city": "Agen",
+    "region": "Midi-Pyrénées",
+    "flux": "https://europe2.lmn.fm/europe2-47000/playlist.m3u8",
+    "lng": 0.65,
+    "lat": 44.2016
+  },
+  {
+    "city": "Ajaccio",
+    "region": "Corse",
+    "flux": null,
+    "lng": 8.7652,
+    "lat": 41.768
+  },
+  {
+    "city": "Amiens",
+    "region": "Nord Picardie",
+    "flux": "https://europe2.lmn.fm/europe2-80000/playlist.m3u8",
+    "lng": 2.2819,
+    "lat": 49.8597
+  },
+  {
+    "city": "Angers",
+    "region": "Pays de la Loire",
+    "flux": "https://europe2.lmn.fm/europe2-49000/playlist.m3u8",
+    "lng": -0.6438,
+    "lat": 47.4525
+  },
+  {
+    "city": "Annemasse",
+    "region": "Alpes",
+    "flux": "https://europe2.lmn.fm/europe2-74100/playlist.m3u8",
+    "lng": 6.1883,
+    "lat": 46.1452
+  },
+  {
+    "city": "Bordeaux",
+    "region": "Gironde",
+    "flux": "https://europe2.lmn.fm/europe2-33000/playlist.m3u8",
+    "lng": -0.5055,
+    "lat": 44.8202
+  },
+  {
+    "city": "Brest",
+    "region": "Bretagne",
+    "flux": "https://europe2.lmn.fm/europe2-29200/playlist.m3u8",
+    "lng": -4.4358,
+    "lat": 48.405
+  },
+  {
+    "city": "Caen",
+    "region": "Normandie",
+    "flux": "https://europe2.lmn.fm/europe2-14000/playlist.m3u8",
+    "lng": -0.2783,
+    "lat": 49.1955
+  },
+  {
+    "city": "Dijon",
+    "region": "Bourgogne",
+    "flux": "https://europe2.lmn.fm/europe2-21000/playlist.m3u8",
+    "lng": 4.9905,
+    "lat": 47.3002
+  },
+  {
+    "city": "Grenoble",
+    "region": "Alpes",
+    "flux": "https://europe2.lmn.fm/europe2-38000/playlist.m3u8",
+    "lng": 5.6683,
+    "lat": 45.1725
+  },
+  {
+    "city": "Le Havre",
+    "region": "Normandie",
+    "flux": "https://europe2.lmn.fm/europe2-76600/playlist.m3u8",
+    "lng": 0.1177,
+    "lat": 49.5025
+  },
+  {
+    "city": "Lille",
+    "region": "Nord Picardie",
+    "flux": "https://europe2.lmn.fm/europe2-59000/playlist.m3u8",
+    "lng": 3.1241,
+    "lat": 50.6427
+  },
+  {
+    "city": "Lyon",
+    "region": "Rhône",
+    "flux": "https://europe2.lmn.fm/europe2-69000/playlist.m3u8",
+    "lng": 4.8222,
+    "lat": 45.7638
+  },
+  {
+    "city": "Marseille",
+    "region": "Provence",
+    "flux": "https://europe2.lmn.fm/europe2-13000/playlist.m3u8",
+    "lng": 5.4252,
+    "lat": 43.3836
+  },
+  {
+    "city": "Montpellier",
+    "region": "Montpellier",
+    "flux": "https://europe2.lmn.fm/europe2-34000/playlist.m3u8",
+    "lng": 3.8177,
+    "lat": 43.6361
+  },
+  {
+    "city": "Nantes",
+    "region": "Pays de la Loire",
+    "flux": "https://europe2.lmn.fm/europe2-44000/playlist.m3u8",
+    "lng": -1.4358,
+    "lat": 47.1869
+  },
+  {
+    "city": "Rennes",
+    "region": "Ouest",
+    "flux": "https://europe2.lmn.fm/europe2-35000/playlist.m3u8",
+    "lng": -1.6272,
+    "lat": 48.1247
+  },
+  {
+    "city": "Strasbourg",
+    "region": "Alsace/Strasbourg",
+    "flux": "https://europe2.lmn.fm/europe2-67000/playlist.m3u8",
+    "lng": 7.7955,
+    "lat": 48.5863
+  },
+  {
+    "city": "Toulouse",
+    "region": "Midi-Pyrénées",
+    "flux": "https://europe2.lmn.fm/europe2-31000/playlist.m3u8",
+    "lng": 1.4611,
+    "lat": 43.6136
+  }
+];
+
+/* ========== Geo projection ==========
+   Map bbox: lng [-5, 9.5], lat [41, 51.5]
+   SVG viewBox: 900 x 620, content area ~ 160..740 x 60..560
+*/
+const PROJ = {
+  lngMin: -5, lngMax: 9.5,
+  latMin: 41, latMax: 51.5,
+  x0: 160, x1: 740,
+  y0: 60,  y1: 560,
+};
+function project(lng, lat){
+  const x = PROJ.x0 + (lng - PROJ.lngMin) / (PROJ.lngMax - PROJ.lngMin) * (PROJ.x1 - PROJ.x0);
+  // latitude inverse: +lat -> up (smaller y)
+  const y = PROJ.y1 - (lat - PROJ.latMin) / (PROJ.latMax - PROJ.latMin) * (PROJ.y1 - PROJ.y0);
+  return {x, y};
+}
+
+/* ========== Render sidebar ========== */
+const MAIN_CITIES = ['Paris','Lyon','Marseille','Bordeaux','Lille','Nantes'];
+const cityList = document.getElementById('cityList');
+const citySecondary = document.getElementById('citySecondary');
+
+// Paris n'est pas dans les données Europe 2 locales — on le gère manuellement
+// comme une "station par défaut" pointant sur le flux national (Annemasse sera par ex. pas adapté).
+// On ajoute Paris en tête avec un flux national Europe 2 générique.
+const PARIS_STATION = {
+  city:'Paris', region:'Île-de-France',
+  flux:'https://europe2.lmn.fm/europe2.m3u8', // fallback national
+  lng:2.3522, lat:48.8566
+};
+const allStations = [PARIS_STATION, ...STATIONS];
+document.getElementById('liveCount').textContent = allStations.length;
+
+function iconBuilding(){
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"/></svg>`;
+}
+
+const main = MAIN_CITIES.map(c => allStations.find(s => s.city.toLowerCase() === c.toLowerCase())).filter(Boolean);
+const rest = allStations.filter(s => !MAIN_CITIES.map(x=>x.toLowerCase()).includes(s.city.toLowerCase()))
+                        .sort((a,b)=>a.city.localeCompare(b.city,'fr'));
+
+main.forEach((s, i) => {
+  const el = document.createElement('button');
+  el.className = 'city' + (i===0 ? ' active' : '');
+  el.dataset.city = s.city;
+  el.innerHTML = iconBuilding() + '<span>'+s.city+'</span>';
+  el.addEventListener('click', () => selectStation(s.city));
+  cityList.appendChild(el);
+});
+rest.forEach(s => {
+  const b = document.createElement('button');
+  b.dataset.city = s.city;
+  b.textContent = s.city;
+  b.addEventListener('click', () => selectStation(s.city));
+  citySecondary.appendChild(b);
+});
+
+/* ========== Render stations on map ========== */
+const gStations = document.getElementById('stations');
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function renderMap(){
+  gStations.innerHTML = '';
+  allStations.forEach(s => {
+    const {x,y} = project(s.lng, s.lat);
+    const g = document.createElementNS(SVG_NS,'g');
+    g.setAttribute('class','station-group');
+    g.dataset.city = s.city;
+    g.style.cursor = 'pointer';
+
+    const ring = document.createElementNS(SVG_NS,'circle');
+    ring.setAttribute('cx',x); ring.setAttribute('cy',y);
+    ring.setAttribute('r',6);
+    ring.setAttribute('class','pulse-ring');
+    ring.style.display = 'none';
+    g.appendChild(ring);
+
+    const dot = document.createElementNS(SVG_NS,'circle');
+    dot.setAttribute('cx',x); dot.setAttribute('cy',y);
+    dot.setAttribute('r',4);
+    dot.setAttribute('class','station-dot');
+    g.appendChild(dot);
+
+    const label = document.createElementNS(SVG_NS,'text');
+    label.setAttribute('x', x + 10);
+    label.setAttribute('y', y + 3);
+    label.setAttribute('class','station-label');
+    label.textContent = s.city;
+    g.appendChild(label);
+
+    g.addEventListener('click', () => selectStation(s.city));
+    gStations.appendChild(g);
+  });
+}
+renderMap();
+
+/* ========== Audio / HLS ========== */
+const audio = document.getElementById('audio');
+let hls = null;
+let currentIndex = 0;
+let isPlaying = false;
+
+function loadStream(url){
+  if (hls){ hls.destroy(); hls = null; }
+  if (!url){ return false; }
+  if (audio.canPlayType('application/vnd.apple.mpegurl')){
+    audio.src = url;
+    return true;
+  }
+  if (window.Hls && window.Hls.isSupported()){
+    hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(audio);
+    return true;
+  }
+  // fallback
+  audio.src = url;
+  return true;
+}
+
+function updateUI(s){
+  document.getElementById('cardName').textContent = 'Europe 2 ' + s.city;
+  document.getElementById('cardFreq').textContent = s.region;
+  document.getElementById('npTitle').textContent = 'Europe 2 ' + s.city;
+  document.getElementById('npRegion').textContent = s.region;
+
+  // sidebar
+  document.querySelectorAll('.city, .city-secondary button').forEach(el => {
+    el.classList.toggle('active', el.dataset.city === s.city);
+  });
+  // map highlight
+  document.querySelectorAll('.station-group').forEach(g => {
+    const isSel = g.dataset.city === s.city;
+    g.classList.toggle('playing', isSel);
+    const ring = g.querySelector('.pulse-ring');
+    const dot = g.querySelector('.station-dot');
+    if (ring) ring.style.display = (isSel && isPlaying) ? 'block' : 'none';
+    if (dot) dot.classList.toggle('playing', isSel);
+  });
+}
+
+function selectStation(city){
+  const idx = allStations.findIndex(s => s.city === city);
+  if (idx < 0) return;
+  currentIndex = idx;
+  const s = allStations[idx];
+  const ok = loadStream(s.flux);
+  updateUI(s);
+  if (ok && isPlaying){
+    audio.play().catch(()=>{});
+  }
+}
+
+/* ========== Player controls ========== */
+const playBtn = document.getElementById('playBtn');
+const iconPlay = document.getElementById('iconPlay');
+const iconPause = document.getElementById('iconPause');
+const npBars = document.getElementById('npBars');
+
+function setPlayingVisual(p){
+  isPlaying = p;
+  iconPlay.style.display = p ? 'none' : 'block';
+  iconPause.style.display = p ? 'block' : 'none';
+  npBars.style.display = p ? 'inline-flex' : 'none';
+  // update map pulse
+  const s = allStations[currentIndex];
+  document.querySelectorAll('.station-group').forEach(g => {
+    const ring = g.querySelector('.pulse-ring');
+    if (ring) ring.style.display = (p && g.dataset.city === s.city) ? 'block' : 'none';
+  });
+}
+
+playBtn.addEventListener('click', () => {
+  const s = allStations[currentIndex];
+  if (!audio.src && !hls){ loadStream(s.flux); }
+  if (audio.paused){
+    audio.play().then(() => setPlayingVisual(true)).catch(err => {
+      console.warn('Lecture impossible :', err);
+      setPlayingVisual(false);
+    });
+  } else {
+    audio.pause();
+    setPlayingVisual(false);
+  }
+});
+audio.addEventListener('play',  () => setPlayingVisual(true));
+audio.addEventListener('pause', () => setPlayingVisual(false));
+audio.addEventListener('ended', () => setPlayingVisual(false));
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  const i = (currentIndex - 1 + allStations.length) % allStations.length;
+  selectStation(allStations[i].city);
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  const i = (currentIndex + 1) % allStations.length;
+  selectStation(allStations[i].city);
+});
+
+/* ========== Volume ========== */
+const vol = document.getElementById('vol');
+audio.volume = 0.8;
+vol.addEventListener('input', e => { audio.volume = e.target.value / 100; });
+
+/* ========== Search ========== */
+const search = document.getElementById('search');
+search.addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('.city-secondary button').forEach(b => {
+    b.style.display = !q || b.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+/* ========== Init ========== */
+updateUI(allStations[0]);
+</script>
+
+</body>
+</html>
