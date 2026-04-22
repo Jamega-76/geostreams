@@ -537,8 +537,8 @@
 <header>
   <div class="logo">Geo<span>Streams</span></div>
   <nav>
-    <a href="#" class="active">Europe 2</a>
-    <a href="#">RFM</a>
+    <a href="#" class="active" data-network="europe2">Europe 2</a>
+    <a href="#" data-network="rfm">RFM</a>
   </nav>
   <label class="search">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -670,736 +670,24 @@
 
 <script>
 /* ========== Data ========== */
-const STATIONS = [
-  {
-    "city": "Abbeville",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-80000/playlist.m3u8",
-    "lng": 1.8697,
-    "lat": 50.095
-  },
-  {
-    "city": "Agen",
-    "region": "Midi-Pyrénées",
-    "flux": "https://europe2.lmn.fm/europe2-47000/playlist.m3u8",
-    "lng": 0.65,
-    "lat": 44.2017
-  },
-  {
-    "city": "Ajaccio",
-    "region": "Corse",
-    "flux": null,
-    "lng": 8.7653,
-    "lat": 41.7681
-  },
-  {
-    "city": "Amiens",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-80000/playlist.m3u8",
-    "lng": 2.2819,
-    "lat": 49.8597
-  },
-  {
-    "city": "Angers",
-    "region": "Pays de la Loire",
-    "flux": "https://europe2.lmn.fm/europe2-49000/playlist.m3u8",
-    "lng": -0.6439,
-    "lat": 47.4525
-  },
-  {
-    "city": "Annemasse",
-    "region": "Alpes",
-    "flux": "https://europe2.lmn.fm/europe2-74100/playlist.m3u8",
-    "lng": 6.1883,
-    "lat": 46.1453
-  },
-  {
-    "city": "Arcachon",
-    "region": "Gironde",
-    "flux": "https://europe2.lmn.fm/europe2-33120/playlist.m3u8",
-    "lng": -1.1539,
-    "lat": 44.6536
-  },
-  {
-    "city": "Auch",
-    "region": "Midi-Pyrénées",
-    "flux": "https://europe2.lmn.fm/europe2-32000/playlist.m3u8",
-    "lng": 0.5267,
-    "lat": 43.6508
-  },
-  {
-    "city": "Avignon",
-    "region": "Provence",
-    "flux": "https://europe2.lmn.fm/europe2-84000/playlist.m3u8",
-    "lng": 4.8042,
-    "lat": 43.9842
-  },
-  {
-    "city": "Bayeux",
-    "region": "Normandie",
-    "flux": "https://europe2.lmn.fm/europe2-76600/playlist.m3u8",
-    "lng": -0.6822,
-    "lat": 49.2792
-  },
-  {
-    "city": "Bayonne",
-    "region": "Sud Aquitaine",
-    "flux": "https://europe2.lmn.fm/europe2-64200/playlist.m3u8",
-    "lng": -1.6353,
-    "lat": 43.3092
-  },
-  {
-    "city": "Belfort",
-    "region": "Alsace/Mulhouse",
-    "flux": "https://europe2.lmn.fm/europe2-90000/playlist.m3u8",
-    "lng": 6.8197,
-    "lat": 47.6614
-  },
-  {
-    "city": "Besançon",
-    "region": "Alsace/Mulhouse",
-    "flux": "https://europe2.lmn.fm/europe2-25000/playlist.m3u8",
-    "lng": 6.0414,
-    "lat": 47.2361
-  },
-  {
-    "city": "Bordeaux",
-    "region": "Gironde",
-    "flux": "https://europe2.lmn.fm/europe2-33000/playlist.m3u8",
-    "lng": -0.5056,
-    "lat": 44.8203
-  },
-  {
-    "city": "Boulogne-Sur-Mer",
-    "region": "Côte d'Opale",
-    "flux": "https://europe2.lmn.fm/europe2-62200/playlist.m3u8",
-    "lng": 1.6514,
-    "lat": 50.7175
-  },
-  {
-    "city": "Bourges",
-    "region": "Centre",
-    "flux": "https://europe2.lmn.fm/europe2-18000/playlist.m3u8",
-    "lng": 2.3675,
-    "lat": 47.0714
-  },
-  {
-    "city": "Brest",
-    "region": "Bretagne",
-    "flux": "https://europe2.lmn.fm/europe2-29200/playlist.m3u8",
-    "lng": -4.4358,
-    "lat": 48.405
-  },
-  {
-    "city": "Béthune",
-    "region": "Lens-Béthune",
-    "flux": null,
-    "lng": 2.6072,
-    "lat": 50.4336
-  },
-  {
-    "city": "Caen",
-    "region": "Normandie",
-    "flux": "https://europe2.lmn.fm/europe2-14000/playlist.m3u8",
-    "lng": -0.2783,
-    "lat": 49.1956
-  },
-  {
-    "city": "Carpentras",
-    "region": "Provence",
-    "flux": "https://europe2.lmn.fm/europe2-84000/playlist.m3u8",
-    "lng": 5.0064,
-    "lat": 44.1464
-  },
-  {
-    "city": "Castelnaudary",
-    "region": "Midi-Pyrénées",
-    "flux": "https://europe2.lmn.fm/europe2-31000/playlist.m3u8",
-    "lng": 1.9194,
-    "lat": 43.2931
-  },
-  {
-    "city": "Castres",
-    "region": "Midi-Pyrénées",
-    "flux": "https://europe2.lmn.fm/europe2-31000/playlist.m3u8",
-    "lng": 2.2081,
-    "lat": 43.6036
-  },
-  {
-    "city": "Chalon-Sur-Saône",
-    "region": "Bourgogne",
-    "flux": "https://europe2.lmn.fm/europe2-71100/playlist.m3u8",
-    "lng": 4.6781,
-    "lat": 46.72
-  },
-  {
-    "city": "Chartres",
-    "region": "Normandie-Centre",
-    "flux": "https://europe2.lmn.fm/europe2-28000/playlist.m3u8",
-    "lng": 1.4911,
-    "lat": 48.4617
-  },
-  {
-    "city": "Cherbourg",
-    "region": "Normandie",
-    "flux": "https://europe2.lmn.fm/europe2-50100/playlist.m3u8",
-    "lng": -1.6314,
-    "lat": 49.6275
-  },
-  {
-    "city": "Châteauroux",
-    "region": "Centre",
-    "flux": "https://europe2.lmn.fm/europe2-18000/playlist.m3u8",
-    "lng": 1.7389,
-    "lat": 46.8008
-  },
-  {
-    "city": "Châtellerault",
-    "region": "Centre",
-    "flux": "https://europe2.lmn.fm/europe2-37000/playlist.m3u8",
-    "lng": 0.5481,
-    "lat": 46.8278
-  },
-  {
-    "city": "Cognac",
-    "region": "Charentes",
-    "flux": "https://europe2.lmn.fm/europe2-16100/playlist.m3u8",
-    "lng": -0.3428,
-    "lat": 45.7008
-  },
-  {
-    "city": "Colmar",
-    "region": "Alsace/Mulhouse",
-    "flux": "https://europe2.lmn.fm/europe2-68026/playlist.m3u8",
-    "lng": 7.3744,
-    "lat": 48.0817
-  },
-  {
-    "city": "Commercy",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-55200/playlist.m3u8",
-    "lng": 5.6719,
-    "lat": 48.7903
-  },
-  {
-    "city": "Dax",
-    "region": "Sud Aquitaine",
-    "flux": "https://europe2.lmn.fm/europe2-40100/playlist.m3u8",
-    "lng": -1.1067,
-    "lat": 43.7339
-  },
-  {
-    "city": "Dieppe",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-80000/playlist.m3u8",
-    "lng": 1.1128,
-    "lat": 49.9233
-  },
-  {
-    "city": "Dijon",
-    "region": "Bourgogne",
-    "flux": "https://europe2.lmn.fm/europe2-21000/playlist.m3u8",
-    "lng": 4.9906,
-    "lat": 47.3003
-  },
-  {
-    "city": "Douarnenez",
-    "region": "Bretagne",
-    "flux": "https://europe2.lmn.fm/europe2-29000/playlist.m3u8",
-    "lng": -4.3533,
-    "lat": 48.0822
-  },
-  {
-    "city": "Draguignan",
-    "region": "Provence",
-    "flux": "https://europe2.lmn.fm/europe2-83000/playlist.m3u8",
-    "lng": 6.4617,
-    "lat": 43.5583
-  },
-  {
-    "city": "Dunkerque",
-    "region": "Côte d'Opale",
-    "flux": "https://europe2.lmn.fm/europe2-59140/playlist.m3u8",
-    "lng": 2.3619,
-    "lat": 51.0233
-  },
-  {
-    "city": "Falaise",
-    "region": "Normandie",
-    "flux": "https://europe2.lmn.fm/europe2-14000/playlist.m3u8",
-    "lng": -0.2803,
-    "lat": 48.9114
-  },
-  {
-    "city": "Fontenay-Le-Comte",
-    "region": "Charentes",
-    "flux": "https://europe2.lmn.fm/europe2-17000/playlist.m3u8",
-    "lng": -0.7792,
-    "lat": 46.4953
-  },
-  {
-    "city": "Forbach",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-57600/playlist.m3u8",
-    "lng": 6.9239,
-    "lat": 49.1703
-  },
-  {
-    "city": "Grenoble",
-    "region": "Alpes",
-    "flux": "https://europe2.lmn.fm/europe2-38000/playlist.m3u8",
-    "lng": 5.6683,
-    "lat": 45.1725
-  },
-  {
-    "city": "Guingamp",
-    "region": "Ouest",
-    "flux": "https://europe2.lmn.fm/europe2-22200/playlist.m3u8",
-    "lng": -3.1992,
-    "lat": 48.5858
-  },
-  {
-    "city": "Haguenau",
-    "region": "Alsace/Strasbourg",
-    "flux": "https://europe2.lmn.fm/europe2-67500/playlist.m3u8",
-    "lng": 7.7667,
-    "lat": 48.8033
-  },
-  {
-    "city": "Hazebrouck",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-59190/playlist.m3u8",
-    "lng": 2.5411,
-    "lat": 50.7269
-  },
-  {
-    "city": "Joinville",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-52300/playlist.m3u8",
-    "lng": 5.1708,
-    "lat": 48.4278
-  },
-  {
-    "city": "Jonzac",
-    "region": "Charentes",
-    "flux": "https://europe2.lmn.fm/europe2-17500/playlist.m3u8",
-    "lng": -0.415,
-    "lat": 45.4431
-  },
-  {
-    "city": "La Roche-Sur-Yon",
-    "region": "Vendée",
-    "flux": "https://europe2.lmn.fm/europe2-85000/playlist.m3u8",
-    "lng": -1.4333,
-    "lat": 46.6908
-  },
-  {
-    "city": "La Rochelle",
-    "region": "Charentes",
-    "flux": "https://europe2.lmn.fm/europe2-17000/playlist.m3u8",
-    "lng": -1.1139,
-    "lat": 46.1942
-  },
-  {
-    "city": "Lacanau",
-    "region": "Gironde",
-    "flux": "https://europe2.lmn.fm/europe2-33120/playlist.m3u8",
-    "lng": -1.1681,
-    "lat": 45.015
-  },
-  {
-    "city": "Le Havre",
-    "region": "Normandie",
-    "flux": "https://europe2.lmn.fm/europe2-76600/playlist.m3u8",
-    "lng": 0.1178,
-    "lat": 49.5025
-  },
-  {
-    "city": "Le Mans",
-    "region": "Pays de la Loire",
-    "flux": "https://europe2.lmn.fm/europe2-72000/playlist.m3u8",
-    "lng": 0.1617,
-    "lat": 48.0036
-  },
-  {
-    "city": "Les Sables-D'Olonne",
-    "region": "Vendée",
-    "flux": "https://europe2.lmn.fm/europe2-85000/playlist.m3u8",
-    "lng": -1.7042,
-    "lat": 46.5142
-  },
-  {
-    "city": "Ligny-En-Barrois",
-    "region": "Lorraine Champagne",
-    "flux": "https://europe2.lmn.fm/europe2-55555/playlist.m3u8",
-    "lng": 5.3394,
-    "lat": 48.6833
-  },
-  {
-    "city": "Lille",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-59000/playlist.m3u8",
-    "lng": 3.1242,
-    "lat": 50.6428
-  },
-  {
-    "city": "Longwy",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-54400/playlist.m3u8",
-    "lng": 5.785,
-    "lat": 49.5225
-  },
-  {
-    "city": "Lons-Le-Saunier",
-    "region": "Bourgogne",
-    "flux": "https://europe2.lmn.fm/europe2-21000/playlist.m3u8",
-    "lng": 5.5822,
-    "lat": 46.6519
-  },
-  {
-    "city": "Lorient",
-    "region": "Bretagne",
-    "flux": "https://europe2.lmn.fm/europe2-56100/playlist.m3u8",
-    "lng": -3.2886,
-    "lat": 47.7586
-  },
-  {
-    "city": "Luçon",
-    "region": "Vendée",
-    "flux": "https://europe2.lmn.fm/europe2-85000/playlist.m3u8",
-    "lng": -1.1492,
-    "lat": 46.4714
-  },
-  {
-    "city": "Lyon",
-    "region": "Rhône",
-    "flux": "https://europe2.lmn.fm/europe2-69000/playlist.m3u8",
-    "lng": 4.8222,
-    "lat": 45.7639
-  },
-  {
-    "city": "Marseille",
-    "region": "Provence",
-    "flux": "https://europe2.lmn.fm/europe2-13000/playlist.m3u8",
-    "lng": 5.4253,
-    "lat": 43.3836
-  },
-  {
-    "city": "Metz",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-57000/playlist.m3u8",
-    "lng": 6.2167,
-    "lat": 49.1417
-  },
-  {
-    "city": "Mont-De-Marsan",
-    "region": "Sud Aquitaine",
-    "flux": "https://europe2.lmn.fm/europe2-40100/playlist.m3u8",
-    "lng": -0.4958,
-    "lat": 43.8608
-  },
-  {
-    "city": "Montpellier",
-    "region": "Montpellier",
-    "flux": "https://europe2.lmn.fm/europe2-34000/playlist.m3u8",
-    "lng": 3.8178,
-    "lat": 43.6361
-  },
-  {
-    "city": "Montreuil",
-    "region": "Côte d'Opale",
-    "flux": "https://europe2.lmn.fm/europe2-62170/playlist.m3u8",
-    "lng": 1.6486,
-    "lat": 50.5636
-  },
-  {
-    "city": "Morlaix",
-    "region": "Bretagne",
-    "flux": "https://europe2.lmn.fm/europe2-29600/playlist.m3u8",
-    "lng": -3.8042,
-    "lat": 48.5869
-  },
-  {
-    "city": "Mulhouse",
-    "region": "Alsace/Mulhouse",
-    "flux": "https://europe2.lmn.fm/europe2-68100/playlist.m3u8",
-    "lng": 7.3489,
-    "lat": 47.7294
-  },
-  {
-    "city": "Mâcon",
-    "region": "Rhône",
-    "flux": "https://europe2.lmn.fm/europe2-71000/playlist.m3u8",
-    "lng": 4.7833,
-    "lat": 46.3517
-  },
-  {
-    "city": "Nancy",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-54000/playlist.m3u8",
-    "lng": 6.2047,
-    "lat": 48.7192
-  },
-  {
-    "city": "Nantes",
-    "region": "Pays de la Loire",
-    "flux": "https://europe2.lmn.fm/europe2-44000/playlist.m3u8",
-    "lng": -1.4358,
-    "lat": 47.1869
-  },
-  {
-    "city": "Neufchâtel-En-Bray",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-80000/playlist.m3u8",
-    "lng": 1.3744,
-    "lat": 49.7858
-  },
-  {
-    "city": "Nevers",
-    "region": "Centre",
-    "flux": "https://europe2.lmn.fm/europe2-18000/playlist.m3u8",
-    "lng": 3.1319,
-    "lat": 46.9811
-  },
-  {
-    "city": "Niederbronn-Les-Bains",
-    "region": "Alsace/Strasbourg",
-    "flux": "https://europe2.lmn.fm/europe2-67500/playlist.m3u8",
-    "lng": 7.6228,
-    "lat": 48.9447
-  },
-  {
-    "city": "Noyon",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-02200/playlist.m3u8",
-    "lng": 2.9675,
-    "lat": 49.5656
-  },
-  {
-    "city": "Pau",
-    "region": "Sud Aquitaine",
-    "flux": "https://europe2.lmn.fm/europe2-64000/playlist.m3u8",
-    "lng": -0.4139,
-    "lat": 43.2883
-  },
-  {
-    "city": "Ploërmel",
-    "region": "Bretagne",
-    "flux": "https://europe2.lmn.fm/europe2-56000/playlist.m3u8",
-    "lng": -2.3636,
-    "lat": 47.9114
-  },
-  {
-    "city": "Pouzauges",
-    "region": "Vendée",
-    "flux": "https://europe2.lmn.fm/europe2-85000/playlist.m3u8",
-    "lng": -0.915,
-    "lat": 46.8436
-  },
-  {
-    "city": "Quimper",
-    "region": "Bretagne",
-    "flux": "https://europe2.lmn.fm/europe2-29000/playlist.m3u8",
-    "lng": -4.1431,
-    "lat": 47.9975
-  },
-  {
-    "city": "Rennes",
-    "region": "Ouest",
-    "flux": "https://europe2.lmn.fm/europe2-35000/playlist.m3u8",
-    "lng": -1.6272,
-    "lat": 48.1247
-  },
-  {
-    "city": "Rouen",
-    "region": "Normandie-Centre",
-    "flux": "https://europe2.lmn.fm/europe2-76000/playlist.m3u8",
-    "lng": 1.0331,
-    "lat": 49.4428
-  },
-  {
-    "city": "Royan",
-    "region": "Charentes",
-    "flux": "https://europe2.lmn.fm/europe2-17200/playlist.m3u8",
-    "lng": -1.0628,
-    "lat": 45.6361
-  },
-  {
-    "city": "Saint-Brieuc",
-    "region": "Ouest",
-    "flux": "https://europe2.lmn.fm/europe2-22000/playlist.m3u8",
-    "lng": -2.7561,
-    "lat": 48.5381
-  },
-  {
-    "city": "Saint-Gilles-Croix-De-Vie",
-    "region": "Vendée",
-    "flux": "https://europe2.lmn.fm/europe2-85000/playlist.m3u8",
-    "lng": -2.0092,
-    "lat": 46.7475
-  },
-  {
-    "city": "Saint-Malo",
-    "region": "Ouest",
-    "flux": "https://europe2.lmn.fm/europe2-35000/playlist.m3u8",
-    "lng": -1.9158,
-    "lat": 48.6275
-  },
-  {
-    "city": "Saint-Mihiel",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-55200/playlist.m3u8",
-    "lng": 5.5447,
-    "lat": 48.8847
-  },
-  {
-    "city": "Saint-Nazaire",
-    "region": "Pays de la Loire",
-    "flux": "https://europe2.lmn.fm/europe2-44600/playlist.m3u8",
-    "lng": -2.2714,
-    "lat": 47.2606
-  },
-  {
-    "city": "Saint-Quentin",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-02100/playlist.m3u8",
-    "lng": 3.2589,
-    "lat": 49.8414
-  },
-  {
-    "city": "Saintes",
-    "region": "Charentes",
-    "flux": "https://europe2.lmn.fm/europe2-17100/playlist.m3u8",
-    "lng": -0.6003,
-    "lat": 45.7481
-  },
-  {
-    "city": "Sarre-Union",
-    "region": "Alsace/Strasbourg",
-    "flux": "https://europe2.lmn.fm/europe2-67700/playlist.m3u8",
-    "lng": 7.15,
-    "lat": 48.8836
-  },
-  {
-    "city": "Sarrebourg",
-    "region": "Alsace/Strasbourg",
-    "flux": "https://europe2.lmn.fm/europe2-57400/playlist.m3u8",
-    "lng": 7.03,
-    "lat": 48.7439
-  },
-  {
-    "city": "Saverne",
-    "region": "Alsace/Strasbourg",
-    "flux": "https://europe2.lmn.fm/europe2-67700/playlist.m3u8",
-    "lng": 7.3386,
-    "lat": 48.725
-  },
-  {
-    "city": "Schirmeck",
-    "region": "Alsace/Strasbourg",
-    "flux": "https://europe2.lmn.fm/europe2-67000/playlist.m3u8",
-    "lng": 7.1936,
-    "lat": 48.4714
-  },
-  {
-    "city": "Soissons",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-02200/playlist.m3u8",
-    "lng": 3.335,
-    "lat": 49.4081
-  },
-  {
-    "city": "Soustons",
-    "region": "Sud Aquitaine",
-    "flux": "https://europe2.lmn.fm/europe2-40100/playlist.m3u8",
-    "lng": -1.3853,
-    "lat": 43.7642
-  },
-  {
-    "city": "Strasbourg",
-    "region": "Alsace/Strasbourg",
-    "flux": "https://europe2.lmn.fm/europe2-67000/playlist.m3u8",
-    "lng": 7.7956,
-    "lat": 48.5864
-  },
-  {
-    "city": "Tergnier",
-    "region": "Nord Picardie",
-    "flux": "https://europe2.lmn.fm/europe2-02100/playlist.m3u8",
-    "lng": 3.2881,
-    "lat": 49.6047
-  },
-  {
-    "city": "Toulon",
-    "region": "Provence",
-    "flux": "https://europe2.lmn.fm/europe2-83000/playlist.m3u8",
-    "lng": 5.8456,
-    "lat": 43.0531
-  },
-  {
-    "city": "Toulouse",
-    "region": "Midi-Pyrénées",
-    "flux": "https://europe2.lmn.fm/europe2-31000/playlist.m3u8",
-    "lng": 1.4611,
-    "lat": 43.6136
-  },
-  {
-    "city": "Tours",
-    "region": "Centre",
-    "flux": "https://europe2.lmn.fm/europe2-37000/playlist.m3u8",
-    "lng": 0.6919,
-    "lat": 47.3414
-  },
-  {
-    "city": "Valence",
-    "region": "Rhône",
-    "flux": "https://europe2.lmn.fm/europe2-26000/playlist.m3u8",
-    "lng": 4.7983,
-    "lat": 44.9644
-  },
-  {
-    "city": "Vannes",
-    "region": "Bretagne",
-    "flux": "https://europe2.lmn.fm/europe2-56000/playlist.m3u8",
-    "lng": -2.7086,
-    "lat": 47.6561
-  },
-  {
-    "city": "Verdun",
-    "region": "Lorraine",
-    "flux": "https://europe2.lmn.fm/europe2-55100/playlist.m3u8",
-    "lng": 5.4586,
-    "lat": 49.1636
-  },
-  {
-    "city": "Vesoul",
-    "region": "Alsace/Mulhouse",
-    "flux": "https://europe2.lmn.fm/europe2-90000/playlist.m3u8",
-    "lng": 6.1544,
-    "lat": 47.5875
-  },
-  {
-    "city": "Vic-Fezensac",
-    "region": "Midi-Pyrénées",
-    "flux": "https://europe2.lmn.fm/europe2-32000/playlist.m3u8",
-    "lng": 0.3397,
-    "lat": 43.7561
-  },
-  {
-    "city": "Villeneuve-Sur-Lot",
-    "region": "Midi-Pyrénées",
-    "flux": "https://europe2.lmn.fm/europe2-47300/playlist.m3u8",
-    "lng": 0.7183,
-    "lat": 44.4319
-  },
-  {
-    "city": "Voiron",
-    "region": "Alpes",
-    "flux": "https://europe2.lmn.fm/europe2-38000/playlist.m3u8",
-    "lng": 5.5947,
-    "lat": 45.3714
+const NETWORKS = {
+  europe2: {
+    id: 'europe2',
+    label: 'Europe 2',
+    accent: '#e8b155',
+    accent2: '#f5cf86',
+    stations: [{"city":"Abbeville","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-80000/playlist.m3u8","lng":1.8697,"lat":50.095},{"city":"Agen","region":"Midi-Pyrénées","flux":"https://europe2.lmn.fm/europe2-47000/playlist.m3u8","lng":0.65,"lat":44.2017},{"city":"Ajaccio","region":"Corse","flux":null,"lng":8.7653,"lat":41.7681},{"city":"Amiens","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-80000/playlist.m3u8","lng":2.2819,"lat":49.8597},{"city":"Angers","region":"Pays de la Loire","flux":"https://europe2.lmn.fm/europe2-49000/playlist.m3u8","lng":-0.6439,"lat":47.4525},{"city":"Annemasse","region":"Alpes","flux":"https://europe2.lmn.fm/europe2-74100/playlist.m3u8","lng":6.1883,"lat":46.1453},{"city":"Arcachon","region":"Gironde","flux":"https://europe2.lmn.fm/europe2-33120/playlist.m3u8","lng":-1.1539,"lat":44.6536},{"city":"Auch","region":"Midi-Pyrénées","flux":"https://europe2.lmn.fm/europe2-32000/playlist.m3u8","lng":0.5267,"lat":43.6508},{"city":"Avignon","region":"Provence","flux":"https://europe2.lmn.fm/europe2-84000/playlist.m3u8","lng":4.8042,"lat":43.9842},{"city":"Bayeux","region":"Normandie","flux":"https://europe2.lmn.fm/europe2-76600/playlist.m3u8","lng":-0.6822,"lat":49.2792},{"city":"Bayonne","region":"Sud Aquitaine","flux":"https://europe2.lmn.fm/europe2-64200/playlist.m3u8","lng":-1.6353,"lat":43.3092},{"city":"Belfort","region":"Alsace/Mulhouse","flux":"https://europe2.lmn.fm/europe2-90000/playlist.m3u8","lng":6.8197,"lat":47.6614},{"city":"Besançon","region":"Alsace/Mulhouse","flux":"https://europe2.lmn.fm/europe2-25000/playlist.m3u8","lng":6.0414,"lat":47.2361},{"city":"Bordeaux","region":"Gironde","flux":"https://europe2.lmn.fm/europe2-33000/playlist.m3u8","lng":-0.5056,"lat":44.8203},{"city":"Boulogne-Sur-Mer","region":"Côte d'Opale","flux":"https://europe2.lmn.fm/europe2-62200/playlist.m3u8","lng":1.6514,"lat":50.7175},{"city":"Bourges","region":"Centre","flux":"https://europe2.lmn.fm/europe2-18000/playlist.m3u8","lng":2.3675,"lat":47.0714},{"city":"Brest","region":"Bretagne","flux":"https://europe2.lmn.fm/europe2-29200/playlist.m3u8","lng":-4.4358,"lat":48.405},{"city":"Béthune","region":"Lens-Béthune","flux":null,"lng":2.6072,"lat":50.4336},{"city":"Caen","region":"Normandie","flux":"https://europe2.lmn.fm/europe2-14000/playlist.m3u8","lng":-0.2783,"lat":49.1956},{"city":"Carpentras","region":"Provence","flux":"https://europe2.lmn.fm/europe2-84000/playlist.m3u8","lng":5.0064,"lat":44.1464},{"city":"Castelnaudary","region":"Midi-Pyrénées","flux":"https://europe2.lmn.fm/europe2-31000/playlist.m3u8","lng":1.9194,"lat":43.2931},{"city":"Castres","region":"Midi-Pyrénées","flux":"https://europe2.lmn.fm/europe2-31000/playlist.m3u8","lng":2.2081,"lat":43.6036},{"city":"Chalon-Sur-Saône","region":"Bourgogne","flux":"https://europe2.lmn.fm/europe2-71100/playlist.m3u8","lng":4.6781,"lat":46.72},{"city":"Chartres","region":"Normandie-Centre","flux":"https://europe2.lmn.fm/europe2-28000/playlist.m3u8","lng":1.4911,"lat":48.4617},{"city":"Cherbourg","region":"Normandie","flux":"https://europe2.lmn.fm/europe2-50100/playlist.m3u8","lng":-1.6314,"lat":49.6275},{"city":"Châteauroux","region":"Centre","flux":"https://europe2.lmn.fm/europe2-18000/playlist.m3u8","lng":1.7389,"lat":46.8008},{"city":"Châtellerault","region":"Centre","flux":"https://europe2.lmn.fm/europe2-37000/playlist.m3u8","lng":0.5481,"lat":46.8278},{"city":"Cognac","region":"Charentes","flux":"https://europe2.lmn.fm/europe2-16100/playlist.m3u8","lng":-0.3428,"lat":45.7008},{"city":"Colmar","region":"Alsace/Mulhouse","flux":"https://europe2.lmn.fm/europe2-68026/playlist.m3u8","lng":7.3744,"lat":48.0817},{"city":"Commercy","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-55200/playlist.m3u8","lng":5.6719,"lat":48.7903},{"city":"Dax","region":"Sud Aquitaine","flux":"https://europe2.lmn.fm/europe2-40100/playlist.m3u8","lng":-1.1067,"lat":43.7339},{"city":"Dieppe","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-80000/playlist.m3u8","lng":1.1128,"lat":49.9233},{"city":"Dijon","region":"Bourgogne","flux":"https://europe2.lmn.fm/europe2-21000/playlist.m3u8","lng":4.9906,"lat":47.3003},{"city":"Douarnenez","region":"Bretagne","flux":"https://europe2.lmn.fm/europe2-29000/playlist.m3u8","lng":-4.3533,"lat":48.0822},{"city":"Draguignan","region":"Provence","flux":"https://europe2.lmn.fm/europe2-83000/playlist.m3u8","lng":6.4617,"lat":43.5583},{"city":"Dunkerque","region":"Côte d'Opale","flux":"https://europe2.lmn.fm/europe2-59140/playlist.m3u8","lng":2.3619,"lat":51.0233},{"city":"Falaise","region":"Normandie","flux":"https://europe2.lmn.fm/europe2-14000/playlist.m3u8","lng":-0.2803,"lat":48.9114},{"city":"Fontenay-Le-Comte","region":"Charentes","flux":"https://europe2.lmn.fm/europe2-17000/playlist.m3u8","lng":-0.7792,"lat":46.4953},{"city":"Forbach","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-57600/playlist.m3u8","lng":6.9239,"lat":49.1703},{"city":"Grenoble","region":"Alpes","flux":"https://europe2.lmn.fm/europe2-38000/playlist.m3u8","lng":5.6683,"lat":45.1725},{"city":"Guingamp","region":"Ouest","flux":"https://europe2.lmn.fm/europe2-22200/playlist.m3u8","lng":-3.1992,"lat":48.5858},{"city":"Haguenau","region":"Alsace/Strasbourg","flux":"https://europe2.lmn.fm/europe2-67500/playlist.m3u8","lng":7.7667,"lat":48.8033},{"city":"Hazebrouck","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-59190/playlist.m3u8","lng":2.5411,"lat":50.7269},{"city":"Joinville","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-52300/playlist.m3u8","lng":5.1708,"lat":48.4278},{"city":"Jonzac","region":"Charentes","flux":"https://europe2.lmn.fm/europe2-17500/playlist.m3u8","lng":-0.415,"lat":45.4431},{"city":"La Roche-Sur-Yon","region":"Vendée","flux":"https://europe2.lmn.fm/europe2-85000/playlist.m3u8","lng":-1.4333,"lat":46.6908},{"city":"La Rochelle","region":"Charentes","flux":"https://europe2.lmn.fm/europe2-17000/playlist.m3u8","lng":-1.1139,"lat":46.1942},{"city":"Lacanau","region":"Gironde","flux":"https://europe2.lmn.fm/europe2-33120/playlist.m3u8","lng":-1.1681,"lat":45.015},{"city":"Le Havre","region":"Normandie","flux":"https://europe2.lmn.fm/europe2-76600/playlist.m3u8","lng":0.1178,"lat":49.5025},{"city":"Le Mans","region":"Pays de la Loire","flux":"https://europe2.lmn.fm/europe2-72000/playlist.m3u8","lng":0.1617,"lat":48.0036},{"city":"Les Sables-D'Olonne","region":"Vendée","flux":"https://europe2.lmn.fm/europe2-85000/playlist.m3u8","lng":-1.7042,"lat":46.5142},{"city":"Ligny-En-Barrois","region":"Lorraine Champagne","flux":"https://europe2.lmn.fm/europe2-55555/playlist.m3u8","lng":5.3394,"lat":48.6833},{"city":"Lille","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-59000/playlist.m3u8","lng":3.1242,"lat":50.6428},{"city":"Longwy","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-54400/playlist.m3u8","lng":5.785,"lat":49.5225},{"city":"Lons-Le-Saunier","region":"Bourgogne","flux":"https://europe2.lmn.fm/europe2-21000/playlist.m3u8","lng":5.5822,"lat":46.6519},{"city":"Lorient","region":"Bretagne","flux":"https://europe2.lmn.fm/europe2-56100/playlist.m3u8","lng":-3.2886,"lat":47.7586},{"city":"Luçon","region":"Vendée","flux":"https://europe2.lmn.fm/europe2-85000/playlist.m3u8","lng":-1.1492,"lat":46.4714},{"city":"Lyon","region":"Rhône","flux":"https://europe2.lmn.fm/europe2-69000/playlist.m3u8","lng":4.8222,"lat":45.7639},{"city":"Marseille","region":"Provence","flux":"https://europe2.lmn.fm/europe2-13000/playlist.m3u8","lng":5.4253,"lat":43.3836},{"city":"Metz","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-57000/playlist.m3u8","lng":6.2167,"lat":49.1417},{"city":"Mont-De-Marsan","region":"Sud Aquitaine","flux":"https://europe2.lmn.fm/europe2-40100/playlist.m3u8","lng":-0.4958,"lat":43.8608},{"city":"Montpellier","region":"Montpellier","flux":"https://europe2.lmn.fm/europe2-34000/playlist.m3u8","lng":3.8178,"lat":43.6361},{"city":"Montreuil","region":"Côte d'Opale","flux":"https://europe2.lmn.fm/europe2-62170/playlist.m3u8","lng":1.6486,"lat":50.5636},{"city":"Morlaix","region":"Bretagne","flux":"https://europe2.lmn.fm/europe2-29600/playlist.m3u8","lng":-3.8042,"lat":48.5869},{"city":"Mulhouse","region":"Alsace/Mulhouse","flux":"https://europe2.lmn.fm/europe2-68100/playlist.m3u8","lng":7.3489,"lat":47.7294},{"city":"Mâcon","region":"Rhône","flux":"https://europe2.lmn.fm/europe2-71000/playlist.m3u8","lng":4.7833,"lat":46.3517},{"city":"Nancy","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-54000/playlist.m3u8","lng":6.2047,"lat":48.7192},{"city":"Nantes","region":"Pays de la Loire","flux":"https://europe2.lmn.fm/europe2-44000/playlist.m3u8","lng":-1.4358,"lat":47.1869},{"city":"Neufchâtel-En-Bray","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-80000/playlist.m3u8","lng":1.3744,"lat":49.7858},{"city":"Nevers","region":"Centre","flux":"https://europe2.lmn.fm/europe2-18000/playlist.m3u8","lng":3.1319,"lat":46.9811},{"city":"Niederbronn-Les-Bains","region":"Alsace/Strasbourg","flux":"https://europe2.lmn.fm/europe2-67500/playlist.m3u8","lng":7.6228,"lat":48.9447},{"city":"Noyon","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-02200/playlist.m3u8","lng":2.9675,"lat":49.5656},{"city":"Pau","region":"Sud Aquitaine","flux":"https://europe2.lmn.fm/europe2-64000/playlist.m3u8","lng":-0.4139,"lat":43.2883},{"city":"Ploërmel","region":"Bretagne","flux":"https://europe2.lmn.fm/europe2-56000/playlist.m3u8","lng":-2.3636,"lat":47.9114},{"city":"Pouzauges","region":"Vendée","flux":"https://europe2.lmn.fm/europe2-85000/playlist.m3u8","lng":-0.915,"lat":46.8436},{"city":"Quimper","region":"Bretagne","flux":"https://europe2.lmn.fm/europe2-29000/playlist.m3u8","lng":-4.1431,"lat":47.9975},{"city":"Rennes","region":"Ouest","flux":"https://europe2.lmn.fm/europe2-35000/playlist.m3u8","lng":-1.6272,"lat":48.1247},{"city":"Rouen","region":"Normandie-Centre","flux":"https://europe2.lmn.fm/europe2-76000/playlist.m3u8","lng":1.0331,"lat":49.4428},{"city":"Royan","region":"Charentes","flux":"https://europe2.lmn.fm/europe2-17200/playlist.m3u8","lng":-1.0628,"lat":45.6361},{"city":"Saint-Brieuc","region":"Ouest","flux":"https://europe2.lmn.fm/europe2-22000/playlist.m3u8","lng":-2.7561,"lat":48.5381},{"city":"Saint-Gilles-Croix-De-Vie","region":"Vendée","flux":"https://europe2.lmn.fm/europe2-85000/playlist.m3u8","lng":-2.0092,"lat":46.7475},{"city":"Saint-Malo","region":"Ouest","flux":"https://europe2.lmn.fm/europe2-35000/playlist.m3u8","lng":-1.9158,"lat":48.6275},{"city":"Saint-Mihiel","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-55200/playlist.m3u8","lng":5.5447,"lat":48.8847},{"city":"Saint-Nazaire","region":"Pays de la Loire","flux":"https://europe2.lmn.fm/europe2-44600/playlist.m3u8","lng":-2.2714,"lat":47.2606},{"city":"Saint-Quentin","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-02100/playlist.m3u8","lng":3.2589,"lat":49.8414},{"city":"Saintes","region":"Charentes","flux":"https://europe2.lmn.fm/europe2-17100/playlist.m3u8","lng":-0.6003,"lat":45.7481},{"city":"Sarre-Union","region":"Alsace/Strasbourg","flux":"https://europe2.lmn.fm/europe2-67700/playlist.m3u8","lng":7.15,"lat":48.8836},{"city":"Sarrebourg","region":"Alsace/Strasbourg","flux":"https://europe2.lmn.fm/europe2-57400/playlist.m3u8","lng":7.03,"lat":48.7439},{"city":"Saverne","region":"Alsace/Strasbourg","flux":"https://europe2.lmn.fm/europe2-67700/playlist.m3u8","lng":7.3386,"lat":48.725},{"city":"Schirmeck","region":"Alsace/Strasbourg","flux":"https://europe2.lmn.fm/europe2-67000/playlist.m3u8","lng":7.1936,"lat":48.4714},{"city":"Soissons","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-02200/playlist.m3u8","lng":3.335,"lat":49.4081},{"city":"Soustons","region":"Sud Aquitaine","flux":"https://europe2.lmn.fm/europe2-40100/playlist.m3u8","lng":-1.3853,"lat":43.7642},{"city":"Strasbourg","region":"Alsace/Strasbourg","flux":"https://europe2.lmn.fm/europe2-67000/playlist.m3u8","lng":7.7956,"lat":48.5864},{"city":"Tergnier","region":"Nord Picardie","flux":"https://europe2.lmn.fm/europe2-02100/playlist.m3u8","lng":3.2881,"lat":49.6047},{"city":"Toulon","region":"Provence","flux":"https://europe2.lmn.fm/europe2-83000/playlist.m3u8","lng":5.8456,"lat":43.0531},{"city":"Toulouse","region":"Midi-Pyrénées","flux":"https://europe2.lmn.fm/europe2-31000/playlist.m3u8","lng":1.4611,"lat":43.6136},{"city":"Tours","region":"Centre","flux":"https://europe2.lmn.fm/europe2-37000/playlist.m3u8","lng":0.6919,"lat":47.3414},{"city":"Valence","region":"Rhône","flux":"https://europe2.lmn.fm/europe2-26000/playlist.m3u8","lng":4.7983,"lat":44.9644},{"city":"Vannes","region":"Bretagne","flux":"https://europe2.lmn.fm/europe2-56000/playlist.m3u8","lng":-2.7086,"lat":47.6561},{"city":"Verdun","region":"Lorraine","flux":"https://europe2.lmn.fm/europe2-55100/playlist.m3u8","lng":5.4586,"lat":49.1636},{"city":"Vesoul","region":"Alsace/Mulhouse","flux":"https://europe2.lmn.fm/europe2-90000/playlist.m3u8","lng":6.1544,"lat":47.5875},{"city":"Vic-Fezensac","region":"Midi-Pyrénées","flux":"https://europe2.lmn.fm/europe2-32000/playlist.m3u8","lng":0.3397,"lat":43.7561},{"city":"Villeneuve-Sur-Lot","region":"Midi-Pyrénées","flux":"https://europe2.lmn.fm/europe2-47300/playlist.m3u8","lng":0.7183,"lat":44.4319},{"city":"Voiron","region":"Alpes","flux":"https://europe2.lmn.fm/europe2-38000/playlist.m3u8","lng":5.5947,"lat":45.3714}]
+  },
+  rfm: {
+    id: 'rfm',
+    label: 'RFM',
+    accent: '#ff6b6b',
+    accent2: '#ff9a8b',
+    stations: [{"city":"Agen","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-47000/playlist.m3u8","lng":0.65,"lat":44.2014},{"city":"Apt","region":"Provence","flux":"https://rfm.lmn.fm/rfm-84300/playlist.m3u8","lng":5.3919,"lat":43.8572},{"city":"Arcachon","region":"Gironde","flux":"https://rfm.lmn.fm/rfm-33000/playlist.m3u8","lng":-1.1639,"lat":44.6472},{"city":"Argentat-Sur-Dordogne","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46400/playlist.m3u8","lng":1.9536,"lat":45.0856},{"city":"Auch","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-32000/playlist.m3u8","lng":0.5267,"lat":43.6508},{"city":"Bayeux","region":"Normandie","flux":"https://rfm.lmn.fm/rfm-14000/playlist.m3u8","lng":-0.6822,"lat":49.2792},{"city":"Bayonne","region":"Pays-Basque/Béarn","flux":"https://rfm.lmn.fm/rfm-64200/playlist.m3u8","lng":-1.6353,"lat":43.3092},{"city":"Bordeaux","region":"Gironde","flux":"https://rfm.lmn.fm/rfm-33000/playlist.m3u8","lng":-0.5056,"lat":44.8203},{"city":"Boulogne-Sur-Mer","region":"Nord","flux":"https://rfm.lmn.fm/rfm-62200/playlist.m3u8","lng":1.6514,"lat":50.7175},{"city":"Bricquebec","region":"Côte d'Emeraude","flux":"https://rfm.lmn.fm/rfm-50400/playlist.m3u8","lng":-1.6156,"lat":49.5119},{"city":"Béthune","region":"Nord","flux":"https://rfm.lmn.fm/rfm-59000/playlist.m3u8","lng":2.6594,"lat":50.5439},{"city":"Caen","region":"Normandie","flux":"https://rfm.lmn.fm/rfm-14000/playlist.m3u8","lng":-0.3403,"lat":49.2025},{"city":"Cahors","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46100/playlist.m3u8","lng":1.4417,"lat":44.4694},{"city":"Calais","region":"Nord","flux":"https://rfm.lmn.fm/rfm-62100/playlist.m3u8","lng":1.7219,"lat":50.9222},{"city":"Cambrai","region":"Nord","flux":"https://rfm.lmn.fm/rfm-59400/playlist.m3u8","lng":3.2219,"lat":50.2008},{"city":"Cavaillon","region":"Provence","flux":"https://rfm.lmn.fm/rfm-84300/playlist.m3u8","lng":5.0306,"lat":43.8386},{"city":"Clermont-L'Hérault","region":"Méditerranée","flux":"https://rfm.lmn.fm/rfm-34800/playlist.m3u8","lng":3.4356,"lat":43.6489},{"city":"Douai","region":"Nord","flux":"https://rfm.lmn.fm/rfm-59500/playlist.m3u8","lng":3.0742,"lat":50.3625},{"city":"Figeac","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46100/playlist.m3u8","lng":1.9686,"lat":44.7056},{"city":"Font-Romeu-Odeillo-Via","region":"Méditerranée / Perpignan","flux":"https://rfm.lmn.fm/rfm-66000/playlist.m3u8","lng":2.0319,"lat":42.4231},{"city":"Gourdon","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46400/playlist.m3u8","lng":1.3953,"lat":44.7294},{"city":"Granville","region":"Côte d'Emeraude","flux":"https://rfm.lmn.fm/rfm-50400/playlist.m3u8","lng":-1.5292,"lat":48.7611},{"city":"La Côte-Saint-André","region":"Rhône-Alpes / Lyon","flux":"https://rfm.lmn.fm/rfm-38260/playlist.m3u8","lng":5.2514,"lat":45.4047},{"city":"La Tour-Du-Pin","region":"Rhône-Alpes / Lyon","flux":"https://rfm.lmn.fm/rfm-69000/playlist.m3u8","lng":5.3069,"lat":45.5919},{"city":"Lille","region":"Nord","flux":"https://rfm.lmn.fm/rfm-59000/playlist.m3u8","lng":3.1242,"lat":50.6428},{"city":"Lodève","region":"Méditerranée","flux":"https://rfm.lmn.fm/rfm-34800/playlist.m3u8","lng":3.2433,"lat":43.7611},{"city":"Lyon","region":"Rhône-Alpes / Lyon","flux":"https://rfm.lmn.fm/rfm-69000/playlist.m3u8","lng":4.8222,"lat":45.7639},{"city":"Marseille","region":"Provence","flux":"https://rfm.lmn.fm/rfm-13000/playlist.m3u8","lng":5.4261,"lat":43.3836},{"city":"Maubeuge","region":"Nord","flux":"https://rfm.lmn.fm/rfm-59300/playlist.m3u8","lng":3.9572,"lat":50.2767},{"city":"Metz","region":"Est","flux":"https://rfm.lmn.fm/rfm-57000/playlist.m3u8","lng":6.2167,"lat":49.1417},{"city":"Mirande","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-32000/playlist.m3u8","lng":0.3886,"lat":43.5172},{"city":"Montpellier","region":"Méditerranée","flux":"https://rfm.lmn.fm/rfm-34000/playlist.m3u8","lng":3.8178,"lat":43.6361},{"city":"Nancy","region":"Est","flux":"https://rfm.lmn.fm/rfm-54000/playlist.m3u8","lng":6.2047,"lat":48.7192},{"city":"Nérac","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-47000/playlist.m3u8","lng":0.3453,"lat":44.1467},{"city":"Pau","region":"Sud Aquitaine","flux":"https://rfm.lmn.fm/rfm-64000/playlist.m3u8","lng":-0.4139,"lat":43.2883},{"city":"Perpignan","region":"Méditerranée","flux":"https://rfm.lmn.fm/rfm-66000/playlist.m3u8","lng":2.8081,"lat":42.7608},{"city":"Prades","region":"Méditerranée / Perpignan","flux":"https://rfm.lmn.fm/rfm-66000/playlist.m3u8","lng":2.4219,"lat":42.6311},{"city":"Rodez","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46100/playlist.m3u8","lng":2.5575,"lat":44.3003},{"city":"Saint-Céré","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46400/playlist.m3u8","lng":1.8839,"lat":44.9256},{"city":"Saint-Lô","region":"Côte d'Emeraude","flux":"https://rfm.lmn.fm/rfm-50400/playlist.m3u8","lng":-1.0958,"lat":49.1347},{"city":"Saint-Malo","region":"Côte d'Emeraude","flux":"https://rfm.lmn.fm/rfm-35400/playlist.m3u8","lng":-1.9158,"lat":48.6275},{"city":"Saint-Omer","region":"Nord","flux":"https://rfm.lmn.fm/rfm-62500/playlist.m3u8","lng":2.1922,"lat":50.7219},{"city":"Souillac","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46400/playlist.m3u8","lng":1.4656,"lat":44.8714},{"city":"Strasbourg","region":"Strasbourg","flux":"https://rfm.lmn.fm/rfm-67000/playlist.m3u8","lng":7.7956,"lat":48.5864},{"city":"Sète","region":"Méditerranée","flux":"https://rfm.lmn.fm/rfm-34000/playlist.m3u8","lng":3.6856,"lat":43.4019},{"city":"Toulouse","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-31000/playlist.m3u8","lng":1.4464,"lat":43.5589},{"city":"Valenciennes","region":"Nord","flux":"https://rfm.lmn.fm/rfm-59300/playlist.m3u8","lng":3.5625,"lat":50.3492},{"city":"Vienne","region":"Rhône-Alpes / Lyon","flux":"https://rfm.lmn.fm/rfm-69000/playlist.m3u8","lng":4.8506,"lat":45.5211},{"city":"Villefranche-De-Rouergue","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-46100/playlist.m3u8","lng":2.0467,"lat":44.3364},{"city":"Villeneuve-Sur-Lot","region":"Sud Ouest","flux":"https://rfm.lmn.fm/rfm-47300/playlist.m3u8","lng":0.7183,"lat":44.4319}]
   }
-];
+};
+let CURRENT_NETWORK = 'europe2';
+let STATIONS = NETWORKS[CURRENT_NETWORK].stations;
 
 /* ========== Geo projection ==========
    viewBox: 1000 x 760
@@ -1436,8 +724,9 @@ function project(lng, lat){
 }
 
 // Rendu du contour France
-(function renderFranceShape(){
+function renderFranceShape(){
   const g = document.getElementById('france-shape');
+  g.innerHTML = '';
   const SVG_NS = 'http://www.w3.org/2000/svg';
   function pathFrom(points){
     return 'M ' + points.map(([lng,lat]) => {
@@ -1445,54 +734,62 @@ function project(lng, lat){
       return x.toFixed(1) + ' ' + y.toFixed(1);
     }).join(' L ') + ' Z';
   }
-  // Fill subtil + contour pointillé
   [COASTLINE.metropole, COASTLINE.corse].forEach(pts => {
-    // fill
     const fill = document.createElementNS(SVG_NS,'path');
     fill.setAttribute('d', pathFrom(pts));
     fill.setAttribute('class','france-fill');
     g.appendChild(fill);
-    // stroke
     const stroke = document.createElementNS(SVG_NS,'path');
     stroke.setAttribute('d', pathFrom(pts));
     stroke.setAttribute('class','france-outline');
     g.appendChild(stroke);
   });
-})();
+}
+renderFranceShape();
 
 /* ========== Render sidebar ========== */
-const MAIN_CITIES = ['Lyon','Marseille','Bordeaux','Lille','Nantes','Strasbourg','Toulouse'];
+// Villes principales mises en avant par réseau (celles qui existent dans le KML)
+const MAIN_CITIES_BY_NETWORK = {
+  europe2: ['Lyon','Marseille','Bordeaux','Lille','Nantes','Strasbourg','Toulouse'],
+  rfm:     ['Lyon','Marseille','Bordeaux','Nantes','Strasbourg','Toulouse','Rennes']
+};
 const cityList = document.getElementById('cityList');
 const citySecondary = document.getElementById('citySecondary');
 
-// On utilise directement les stations du KML (104 villes).
-// Paris n'ayant pas de flux local Europe 2 dans le KML, on laisse les villes fournies.
-const allStations = [...STATIONS];
-document.getElementById('liveCount').textContent = allStations.length;
+let allStations = [...STATIONS];
 
 function iconBuilding(){
   return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"/></svg>`;
 }
 
-const main = MAIN_CITIES.map(c => allStations.find(s => s.city.toLowerCase() === c.toLowerCase())).filter(Boolean);
-const rest = allStations.filter(s => !MAIN_CITIES.map(x=>x.toLowerCase()).includes(s.city.toLowerCase()))
-                        .sort((a,b)=>a.city.localeCompare(b.city,'fr'));
+function renderSidebar(){
+  const MAIN_CITIES = MAIN_CITIES_BY_NETWORK[CURRENT_NETWORK] || [];
+  const mainLower = MAIN_CITIES.map(x => x.toLowerCase());
+  const main = MAIN_CITIES
+    .map(c => allStations.find(s => s.city.toLowerCase() === c.toLowerCase()))
+    .filter(Boolean);
+  const rest = allStations
+    .filter(s => !mainLower.includes(s.city.toLowerCase()))
+    .sort((a,b) => a.city.localeCompare(b.city,'fr'));
 
-main.forEach((s, i) => {
-  const el = document.createElement('button');
-  el.className = 'city' + (i===0 ? ' active' : '');
-  el.dataset.city = s.city;
-  el.innerHTML = iconBuilding() + '<span>'+s.city+'</span>';
-  el.addEventListener('click', () => selectStation(s.city));
-  cityList.appendChild(el);
-});
-rest.forEach(s => {
-  const b = document.createElement('button');
-  b.dataset.city = s.city;
-  b.textContent = s.city;
-  b.addEventListener('click', () => selectStation(s.city));
-  citySecondary.appendChild(b);
-});
+  cityList.innerHTML = '';
+  citySecondary.innerHTML = '';
+  main.forEach((s, i) => {
+    const el = document.createElement('button');
+    el.className = 'city' + (i===0 ? ' active' : '');
+    el.dataset.city = s.city;
+    el.innerHTML = iconBuilding() + '<span>'+s.city+'</span>';
+    el.addEventListener('click', () => selectStation(s.city));
+    cityList.appendChild(el);
+  });
+  rest.forEach(s => {
+    const b = document.createElement('button');
+    b.dataset.city = s.city;
+    b.textContent = s.city;
+    b.addEventListener('click', () => selectStation(s.city));
+    citySecondary.appendChild(b);
+  });
+}
 
 /* ========== Render stations on map ========== */
 const gStations = document.getElementById('stations');
@@ -1513,7 +810,6 @@ function renderMap(){
     ring.style.display = 'none';
     g.appendChild(ring);
 
-    // halo invisible pour faciliter le hover/clic sur petits points
     const hit = document.createElementNS(SVG_NS,'circle');
     hit.setAttribute('cx',x); hit.setAttribute('cy',y);
     hit.setAttribute('r',10);
@@ -1537,7 +833,6 @@ function renderMap(){
     gStations.appendChild(g);
   });
 }
-renderMap();
 
 /* ========== Audio / HLS ========== */
 const audio = document.getElementById('audio');
@@ -1720,14 +1015,20 @@ search.addEventListener('input', e => {
   });
 });
 
-/* ========== Init ========== */
-updateUI(allStations[0]);
-
 /* ========== Stats cards (data-driven) ========== */
-(function renderStats(){
-  const fluxCount = STATIONS.filter(s => s.flux).length;
+function countUp(el, target, dur=900){
+  const start = performance.now();
+  function frame(t){
+    const p = Math.min(1, (t-start)/dur);
+    const eased = 1 - Math.pow(1-p, 3);
+    el.textContent = Math.round(target * eased).toLocaleString('fr-FR').replace(/,/g,' ');
+    if (p < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 
-  // Regroupement par région (zone éditoriale Europe 2)
+function renderStats(){
+  const fluxCount = STATIONS.filter(s => s.flux).length;
   const regionMap = {};
   STATIONS.forEach(s => {
     const r = s.region || '—';
@@ -1737,37 +1038,74 @@ updateUI(allStations[0]);
   const topRegion = regionEntries[0] || ['—',0];
   const regionsCount = regionEntries.length;
 
-  // Nord / Sud avec la Loire comme frontière (~47.3 de latitude moyenne)
   const LOIRE_LAT = 47.3;
   const north = STATIONS.filter(s => s.lat >= LOIRE_LAT).length;
   const south = STATIONS.length - north;
 
-  // Injection — animation de compteur simple
-  function countUp(el, target, dur=900){
-    const start = performance.now();
-    function frame(t){
-      const p = Math.min(1, (t-start)/dur);
-      // easing out
-      const eased = 1 - Math.pow(1-p, 3);
-      el.textContent = Math.round(target * eased).toLocaleString('fr-FR').replace(/,/g,' ');
-      if (p < 1) requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  }
-
   countUp(document.getElementById('statTotal'), STATIONS.length);
   document.getElementById('statFlux').textContent = fluxCount;
   document.getElementById('statRegions').textContent = regionsCount;
-
   document.getElementById('statTopRegion').textContent = topRegion[0];
   document.getElementById('statTopCount').textContent = topRegion[1];
 
-  // Card nord/sud — titre combiné type "60 / 44"
   const nsEl = document.getElementById('statNorthSouth');
   nsEl.innerHTML = `${north} <span style="color:var(--text-mute);font-weight:300">/</span> ${south}`;
   document.getElementById('statNorth').textContent = north;
   document.getElementById('statSouth').textContent = south;
-})();
+}
+
+/* ========== Network switcher ========== */
+function switchNetwork(id){
+  if (!NETWORKS[id] || id === CURRENT_NETWORK) return;
+  // arrêter la lecture en cours
+  if (!audio.paused){ audio.pause(); }
+  if (hls){ try{hls.destroy();}catch(e){} hls = null; }
+  audio.removeAttribute('src'); audio.load();
+  setPlayingVisual(false);
+  setLoadingVisual(false);
+
+  // changer le réseau
+  CURRENT_NETWORK = id;
+  const net = NETWORKS[id];
+  STATIONS = net.stations;
+  allStations = [...STATIONS];
+  currentIndex = 0;
+
+  // couleur d'accent dynamique
+  document.documentElement.style.setProperty('--accent', net.accent);
+  document.documentElement.style.setProperty('--accent-2', net.accent2);
+  // badge "station active" label
+  document.getElementById('liveCount').textContent = allStations.length;
+
+  // onglets
+  document.querySelectorAll('nav a').forEach(a => {
+    a.classList.toggle('active', a.dataset.network === id);
+  });
+
+  // re-render
+  renderSidebar();
+  renderMap();
+  renderStats();
+  updateUI(allStations[0]);
+
+  // re-render du contour France (qui utilise la couleur accent)
+  renderFranceShape();
+}
+
+/* ========== Init ========== */
+renderSidebar();
+renderMap();
+renderStats();
+document.getElementById('liveCount').textContent = allStations.length;
+updateUI(allStations[0]);
+
+// Onglets du header
+document.querySelectorAll('nav a[data-network]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchNetwork(a.dataset.network);
+  });
+});
 </script>
 
 </body>
